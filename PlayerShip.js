@@ -1,14 +1,13 @@
 
 
 class Player extends GameObject {
-    constructor(position, rotation) {
-        super(position, rotation);
+    constructor(position, rotation, manager, velocity = createVector(0, 0)) {
+        super(position, rotation, velocity);
         // ------ MOVEMENT ------
         this.engineActive = false;
         this.moveForceMag = 0.1;
         this.mass = 250;
         this.acceleration = createVector(0, 0);
-        this.velocity = createVector(0, 0);
         this.maxVelocity = 5;
         // ------ ROTATION ------
         this.rotationDir = 0;
@@ -17,7 +16,9 @@ class Player extends GameObject {
         // ------ TELEPORTATION ------
         this.teleportStopGap = true;
         // ------ SHOOTING ------
-        this.shootingStopGap = true;
+        this.manager = manager;
+        this.bulletSpeed = 5;
+        this.shootingStopGap = true; 
         this.Start();
     }
 
@@ -129,7 +130,12 @@ class Player extends GameObject {
     }
 
     Shoot() {
-        console.log("shoot");
-        // SHOOTING GOES HERE
+        
+
+        let bulletVelocity = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.bulletSpeed);
+
+        let bulletOrigin = this.position.copy();
+        
+        this.manager.InstantiateObject(OBJECT_TYPE.BULLET, bulletOrigin, 0, bulletVelocity);
     }
 }

@@ -1,9 +1,11 @@
 class GameObject {
 
-    constructor(position, rotation) {
+    constructor(position, rotation, velocity) {
 
         this.position = position;
         this.rotation = rotation;
+        this.velocity = velocity;
+        this.isAlive = true;
 
         this.Start();
     }
@@ -33,5 +35,9 @@ class GameObject {
         else if (this.position.y > height + offset){
             this.position.y = -offset;
         }
+    }
+
+    DestroySelf() {
+        this.isAlive = false;
     }
 }

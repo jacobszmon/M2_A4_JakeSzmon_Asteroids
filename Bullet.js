@@ -1,14 +1,14 @@
 class Bullet extends GameObject {
     constructor (position, velocity) {
-        super(position, 0);
+        super(position, 0, velocity);
 
-        this.velocity = velocity;
-        this.lifespan = 2;
-        this.timeSinceBirth = this.lifespan;
+        this.lifespan = 1;
+        this.timeSinceBirth = 0;
     }
 
     Update() {
         this.Move();
+        this.RunLifespanTimer();
     }
 
     Draw() {
@@ -29,10 +29,12 @@ class Bullet extends GameObject {
     }
 
     RunLifespanTimer() {
-        this.timeSinceBirth -= 1/frameRate;
+        this.timeSinceBirth += (deltaTime/1000);
 
-        if (this.timeSinceBirth <= 0) {
-            //DIE GOES HERE
+        if (this.timeSinceBirth >= this.lifespan) {
+            
+            this.DestroySelf();
+            console.log(this.isAlive);
         }
     }
 }
