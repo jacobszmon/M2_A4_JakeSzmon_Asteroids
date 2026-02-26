@@ -1,6 +1,8 @@
 class Asteroid extends GameObject {
     constructor(position, rotation, velocity) {
         super(position, rotation, velocity);
+
+        this.collisionRad = 50;
     }
     
     Update() {

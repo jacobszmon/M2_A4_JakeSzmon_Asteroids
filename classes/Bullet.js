@@ -4,6 +4,9 @@ class Bullet extends GameObject {
 
         this.lifespan = 1;
         this.timeSinceBirth = 0;
+        this.whoFired = OBJECT_TYPE.PLAYER;
+
+        this.collisionRad = 20;
     }
 
     Update() {

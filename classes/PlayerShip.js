@@ -20,6 +20,8 @@ class Player extends GameObject {
         this.bulletSpeed = 5;
         this.shootingStopGap = true; 
         this.Start();
+
+        this.collisionRad = 20;
     }
 
     Start() {

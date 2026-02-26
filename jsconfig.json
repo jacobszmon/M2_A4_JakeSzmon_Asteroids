@@ -3,5 +3,5 @@
     "*.js",
     "libraries/*.js",
     "c:\\Users\\jszmon\\.vscode\\extensions\\wmcicompsci.cs30-p5-1.9.3\\p5types\\global.d.ts"
-  ]
+, "classes/Bullet.js", "classes/Asteroid.js", "classes/GameObject.js", "classes/GameObjectManager.js", "classes/PlayerShip.js"  ]
 }

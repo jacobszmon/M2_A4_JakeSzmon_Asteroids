@@ -41,4 +41,38 @@ class GameObjectManager {
         this.asteroids.forEach(asteroid => asteroid.Draw());
         this.bullets.forEach(bullet => bullet.Draw());
     }
+
+
+    CheckCollisions() {
+        this.players.forEach(player => {
+            this.asteroids.forEach(asteroid => {
+                if (this.AreObjectsColliding(player, asteroid)) {
+                    player.CollisionDetected();
+                    asteroid.CollisionDetected();
+                }
+            })
+        });
+        this.asteroids.forEach(asteroid => {
+            this.bullets.forEach(bullet => {
+                if (this.AreObjectsColliding(asteroid, bullet)) {
+                    asteroid.CollisionDetected();
+                    bullet.CollisionDetected();
+                }
+            })
+        });
+    }
+
+
+
+    AreObjectsColliding(object1, object2) {
+        let pos1 = object1.position;
+        let pos2 = object2.position;
+
+        let dist = pos1.dist(pos2);
+
+        if (dist <= object1.collisionRad + object2.collisionRad)
+            return true;
+
+        return false;
+    }
 }

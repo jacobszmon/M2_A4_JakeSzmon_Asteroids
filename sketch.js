@@ -42,5 +42,6 @@ function draw() {
   background(220);
   gameObjectManager.UpdateObjects();
   gameObjectManager.DrawObjects();
+  gameObjectManager.CheckCollisions();
   gameObjectManager.ClearDestroyedObjects();
 }

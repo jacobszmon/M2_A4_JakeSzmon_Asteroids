@@ -37,6 +37,11 @@ class GameObject {
         }
     }
 
+    CollisionDetected() {
+        console.log("collision detected");
+        this.DestroySelf();
+    }
+
     DestroySelf() {
         this.isAlive = false;
     }
