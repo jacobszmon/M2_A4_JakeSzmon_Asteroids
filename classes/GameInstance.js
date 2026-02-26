@@ -1,7 +1,7 @@
 class GameInstance {
     constructor() {
-        this.maxLives = 5;
-        this.currentLives = 5;
+        this.maxLives = 3;
+        this.currentLives = 3;
 
         this.score = 0;
         this.lifeThresholdAchieved = 0;
@@ -33,6 +33,7 @@ class GameInstance {
         this.gameObjectManager.CheckCollisions();
         this.gameObjectManager.ClearDestroyedObjects();
         this.CheckScoreThresholds();
+        this.CheckLives();
     }
 
     PlayerDied() {
@@ -52,5 +53,16 @@ class GameInstance {
             console.log("THRESHOLD PASSED");
             console.log(this.currentLives);
         }
+    }
+
+    CheckLives() {
+        if (this.currentLives <= 0) {
+            this.GameOver();
+        }
+    }
+
+    GameOver() {
+        console.log("Game Over");
+        this.gameObjectManager.ClearAllObjects();
     }
 }

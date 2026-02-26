@@ -35,6 +35,12 @@ class GameObjectManager {
         this.bullets = this.bullets.filter(bullet => bullet.isAlive);
     } 
 
+    ClearAllObjects() {
+        this.players = [];
+        this.asteroids = [];
+        this.bullets = [];
+    }
+
     UpdateObjects() { 
         this.players.forEach(player => player.Update());
         this.asteroids.forEach(asteroid => asteroid.Update());
