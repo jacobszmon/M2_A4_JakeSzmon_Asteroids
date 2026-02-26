@@ -8,6 +8,8 @@ class GameInstance {
 
         this.gameObjectManager = new GameObjectManager(this);
 
+        this.gameHUD = new HUD(this);
+
         this.Start();
     }
 
@@ -32,6 +34,9 @@ class GameInstance {
         this.gameObjectManager.DrawObjects();
         this.gameObjectManager.CheckCollisions();
         this.gameObjectManager.ClearDestroyedObjects();
+
+        this.gameHUD.Draw();
+
         this.CheckScoreThresholds();
         this.CheckLives();
     }
