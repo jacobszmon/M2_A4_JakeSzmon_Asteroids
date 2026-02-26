@@ -4,6 +4,7 @@ class GameInstance {
         this.currentLives = 5;
 
         this.score = 0;
+        this.lifeThresholdAchieved = 0;
 
         this.gameObjectManager = new GameObjectManager(this);
 
@@ -31,6 +32,7 @@ class GameInstance {
         this.gameObjectManager.DrawObjects();
         this.gameObjectManager.CheckCollisions();
         this.gameObjectManager.ClearDestroyedObjects();
+        this.CheckScoreThresholds();
     }
 
     PlayerDied() {
@@ -41,5 +43,14 @@ class GameInstance {
     UpdateScore(delta) {
         this.score += delta;
         console.log(this.score);
+    }
+
+    CheckScoreThresholds() {
+        if (this.score - this.lifeThresholdAchieved >= 10000) {
+            this.lifeThresholdAchieved += 10000;
+            this.currentLives++;
+            console.log("THRESHOLD PASSED");
+            console.log(this.currentLives);
+        }
     }
 }
