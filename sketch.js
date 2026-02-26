@@ -15,5 +15,4 @@ function draw() {
   background(220);
   player.Update();
   player.Draw();
-  square();
 }
