@@ -140,4 +140,8 @@ class Player extends GameObject {
         
         this.manager.InstantiateObject(OBJECT_TYPE.BULLET, bulletOrigin, 0, bulletVelocity);
     }
+
+    DestroySelf() {
+        this.manager.gameInstance.PlayerDied();
+    }
 }

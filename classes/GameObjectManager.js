@@ -1,6 +1,8 @@
 class GameObjectManager {
     
-    constructor() {
+    constructor(gameInstance) {
+        this.gameInstance = gameInstance;
+
         this.players = [];
         this.asteroids = [];
         this.bullets = [];
@@ -24,7 +26,6 @@ class GameObjectManager {
     }
 
     ClearDestroyedObjects() {
-        console.log(this.bullets);
         this.players = this.players.filter(player => player.isAlive);
         this.asteroids = this.asteroids.filter(asteroid => asteroid.isAlive);
         this.bullets = this.bullets.filter(bullet => bullet.isAlive);
