@@ -9,7 +9,7 @@ class GameInstance {
     }
 
     Start() {
-        this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(width/2, height/2), 90);
+        this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(width/2, height/2), -90);
 
         push();
         for (let i = 0; i < 10; i++) {

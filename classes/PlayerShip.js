@@ -143,5 +143,8 @@ class Player extends GameObject {
 
     DestroySelf() {
         this.manager.gameInstance.PlayerDied();
+        this.position = createVector(width/2, height/2);
+        this.velocity = createVector(0, 0);
+        this.rotation = -90;
     }
 }
