@@ -19,11 +19,11 @@ class GameObjectManager {
             case OBJECT_TYPE.PLAYER:
                 this.players.push( new Player(this, position, rotation)); break;
             case OBJECT_TYPE.ASTEROID_BIG:
-                this.asteroids.push( new Asteroid(this, position, rotation, velocity, 20) ); break;
+                this.asteroids.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_BIG) ); break;
             case OBJECT_TYPE.ASTEROID_MED:
-                this.asteroids.push( new Asteroid(this, position, rotation, velocity, 20) ); break;
+                this.asteroids.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_MED) ); break;
             case OBJECT_TYPE.ASTEROID_SML:
-                this.asteroids.push( new Asteroid(this, position, rotation, velocity, 20) ); break;
+                this.asteroids.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_SML) ); break;
             case OBJECT_TYPE.BULLET:
                 this.bullets.push( new Bullet(this, position, velocity) ); break;
         }
