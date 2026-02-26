@@ -16,7 +16,8 @@ class Player extends GameObject {
         this.angularVelocity = 0;
         // ------ TELEPORTATION ------
         this.teleportStopGap = true;
-
+        // ------ SHOOTING ------
+        this.shootingStopGap = true;
         this.Start();
     }
 
@@ -69,12 +70,22 @@ class Player extends GameObject {
             else {
                 this.teleportStopGap = true;
             }
+        // SHOOTING INPUTS (1 FRAME ONLY)
+            if (keyIsDown(32)) {
+                if (this.shootingStopGap) {
+                    this.Shoot();
+                }
+                this.shootingStopGap = false;
+            }
+            else {
+                this.shootingStopGap = true;
+            }
         push();
     }
 
 
 
-    // ---------- MOVE AND ROTATE ----------
+    // ---------- ACTIONS ----------
     Move() {
         push();
             // Set Angle mode for calculation
@@ -115,5 +126,10 @@ class Player extends GameObject {
         let randX = random(0, width);
         let randY = random(0, height);
         this.position = createVector(randX, randY);
+    }
+
+    Shoot() {
+        console.log("shoot");
+        // SHOOTING GOES HERE
     }
 }
