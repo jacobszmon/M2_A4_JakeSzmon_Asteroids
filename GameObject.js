@@ -7,4 +7,16 @@ class GameObject {
 
         this.Start();
     }
+
+    Start() {
+
+    }
+
+    Update() {
+
+    }
+
+    Draw() {
+
+    }
 }
