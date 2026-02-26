@@ -6,7 +6,7 @@ class Player extends GameObject {
         // ------ MOVEMENT ------
         this.engineActive = false;
         this.moveForceMag = 0.1;
-        this.mass = 10;
+        this.mass = 250;
         this.acceleration = createVector(0, 0);
         this.velocity = createVector(0, 0);
         this.maxVelocity = 5;
@@ -30,16 +30,20 @@ class Player extends GameObject {
 
     Draw() {
         push();
+        // Set angle mode, apply position and rotation.
             angleMode(DEGREES);
             translate(this.position);
             rotate(this.rotation);
+            
+        // Draw ship
             quad(20, 0, -20, -15, -10, 0, -20, 15);
         pop();
     }
 
+    // ---------- INPUTS ----------
     ParseInputs() {
         push();
-        // ------ ROTATION INPUTS ------
+        // ROTATION INPUTS
             this.rotationDir = 0;
             if (keyIsDown(LEFT_ARROW)) {
                 this.rotationDir = -1;
@@ -47,7 +51,7 @@ class Player extends GameObject {
             else if (keyIsDown(RIGHT_ARROW)) {
                 this.rotationDir = 1;
             }
-        // ------ MOVE INPUTS ------
+        // MOVE INPUTS
             this.engineActive = false;
             if (keyIsDown(UP_ARROW)) {
                 this.engineActive = true;
@@ -55,26 +59,40 @@ class Player extends GameObject {
         push();
     }
 
+
+
+    // ---------- MOVE AND ROTATE ----------
     Move() {
         push();
+            // Set Angle mode for calculation
             angleMode(DEGREES);
-            if (this.engineActive) {
 
+            // When engine is active, apply move force in the direction the ship is facing.
+            if (this.engineActive) {
                 let force = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.moveForce);
                 this.acceleration = p5.Vector.div(force, this.mass);
 
                 this.velocity.add(this.acceleration.mult(deltaTime));
                 this.velocity.limit(this.maxVelocity);
             }
+            // Otherwise, slow the ship down and stop moving when it gets slow enough.
+            else {
+                this.velocity.mult(0.98);
+                if (this.velocity.mag() < 0.1) {
+                    this.velocity.limit(0);
+                }
+            }
 
+            // Apply velocity to position.
             this.position.add(this.velocity);
         pop();
     }
 
     Rotate() {
-        push();            
+        push();
+        // Get angular velocity.
             this.angularVelocity = this.rotationSpeed * this.rotationDir;
-            
+        // Apply Angular Velocity to rotation (frame rate independent!).
             this.rotation += this.angularVelocity * deltaTime;
         pop();
     }
