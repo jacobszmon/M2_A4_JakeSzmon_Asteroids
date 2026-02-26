@@ -38,21 +38,23 @@ class GameObjectManager {
     }
 
     DrawObjects() {
-        this.players.forEach(player => player.Draw());
-        this.asteroids.forEach(asteroid => asteroid.Draw());
         this.bullets.forEach(bullet => bullet.Draw());
+        this.asteroids.forEach(asteroid => asteroid.Draw());
+        this.players.forEach(player => player.Draw());
     }
 
 
     CheckCollisions() {
+        // ------ CHECK PLAYER COLLISIONS ------
         this.players.forEach(player => {
             this.asteroids.forEach(asteroid => {
-                if (this.AreObjectsColliding(player, asteroid)) {
+                if ((!player.invincible) && (this.AreObjectsColliding(player, asteroid))) {
                     player.CollisionDetected();
                     asteroid.CollisionDetected();
                 }
             })
         });
+        // ------ CHECK ASTEROID COLLISIONS ------
         this.asteroids.forEach(asteroid => {
             this.bullets.forEach(bullet => {
                 if (this.AreObjectsColliding(asteroid, bullet)) {

@@ -19,9 +19,13 @@ class Player extends GameObject {
         this.manager = manager;
         this.bulletSpeed = 5;
         this.shootingStopGap = true; 
-        this.Start();
-
+        // ------ COLLISION ------
         this.collisionRad = 20;
+        this.invincible = false;
+        this.iDuration = 2;
+        this.iElapsed = 0;
+
+        this.Start();
     }
 
     Start() {
@@ -32,6 +36,10 @@ class Player extends GameObject {
         this.ParseInputs();
         this.Move();
         this.Rotate();
+
+        if (this.invincible) {
+            this.RunInvincibilityTimer();
+        }
     }
 
     Draw() {
@@ -40,7 +48,12 @@ class Player extends GameObject {
             angleMode(DEGREES);
             translate(this.position);
             rotate(this.rotation);
-
+            
+            let fillColor = color(255, 255, 255, 255);
+            if ( (this.invincible) && (this.iElapsed % 0.6 >= 0.3) ) {
+                fillColor = color(255, 255, 255, 0);
+            }
+            fill(fillColor);
         // Draw ship
             quad(20, 0, -20, -15, -10, 0, -20, 15);
         pop();
@@ -146,5 +159,15 @@ class Player extends GameObject {
         this.position = createVector(width/2, height/2);
         this.velocity = createVector(0, 0);
         this.rotation = -90;
+        this.invincible = true;
+    }
+
+    RunInvincibilityTimer() {
+        this.iElapsed += deltaTime/1000;
+
+        if (this.iElapsed >= this.iDuration){
+            this.invincible = false;
+            this.iElapsed = 0;
+        }
     }
 }
