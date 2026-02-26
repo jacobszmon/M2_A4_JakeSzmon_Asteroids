@@ -1,11 +1,13 @@
 class GameObject {
 
-    constructor(position, rotation, velocity) {
+    constructor(manager, position, rotation, velocity) {
 
         this.position = position;
         this.rotation = rotation;
         this.velocity = velocity;
         this.isAlive = true;
+
+        this.manager = manager;
 
         this.Start();
     }

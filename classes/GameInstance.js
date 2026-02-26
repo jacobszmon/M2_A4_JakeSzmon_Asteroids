@@ -3,6 +3,8 @@ class GameInstance {
         this.maxLives = 5;
         this.currentLives = 5;
 
+        this.score = 0;
+
         this.gameObjectManager = new GameObjectManager(this);
 
         this.Start();
@@ -18,7 +20,7 @@ class GameInstance {
             let randY = random(0, height);
             let randAngle = random(0, 360);
             let randVelocity = p5.Vector.random2D().mult(1);
-            this.gameObjectManager.InstantiateObject(OBJECT_TYPE.ASTEROID, createVector(randX, randY), randAngle, randVelocity)
+            this.gameObjectManager.InstantiateObject(OBJECT_TYPE.ASTEROID_BIG, createVector(randX, randY), randAngle, randVelocity)
         }
         pop();
     }
@@ -34,5 +36,10 @@ class GameInstance {
     PlayerDied() {
         this.currentLives--;
         console.log(this.currentLives);
+    }
+
+    UpdateScore(delta) {
+        this.score += delta;
+        console.log(this.score);
     }
 }

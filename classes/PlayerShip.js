@@ -1,8 +1,8 @@
 
 
 class Player extends GameObject {
-    constructor(position, rotation, manager, velocity = createVector(0, 0)) {
-        super(position, rotation, velocity);
+    constructor(manager, position, rotation, velocity = createVector(0, 0)) {
+        super(manager, position, rotation, velocity);
         // ------ MOVEMENT ------
         this.engineActive = false;
         this.moveForceMag = 0.1;
@@ -16,7 +16,6 @@ class Player extends GameObject {
         // ------ TELEPORTATION ------
         this.teleportStopGap = true;
         // ------ SHOOTING ------
-        this.manager = manager;
         this.bulletSpeed = 5;
         this.shootingStopGap = true; 
         // ------ COLLISION ------

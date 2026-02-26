@@ -1,12 +1,12 @@
 class Bullet extends GameObject {
-    constructor (position, velocity) {
-        super(position, 0, velocity);
+    constructor (manager, position, velocity) {
+        super(manager, position, 0, velocity);
 
         this.lifespan = 1;
         this.timeSinceBirth = 0;
         this.whoFired = OBJECT_TYPE.PLAYER;
 
-        this.collisionRad = 20;
+        this.collisionRad = 5;
     }
 
     Update() {

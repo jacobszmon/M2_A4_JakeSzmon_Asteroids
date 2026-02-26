@@ -9,8 +9,10 @@ let gameInstance;
 
 const OBJECT_TYPE = Object.freeze({
   PLAYER: 0,
-  ASTEROID: 1,
-  BULLET: 2,
+  ASTEROID_BIG: 1,
+  ASTEROID_MED: 2,
+  ASTEROID_SML: 3,
+  BULLET: 4,
 });
 
 function setup() {

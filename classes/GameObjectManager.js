@@ -17,11 +17,15 @@ class GameObjectManager {
     InstantiateObject(type, position, rotation, velocity = createVector(0,0)) {
         switch (type) {
             case OBJECT_TYPE.PLAYER:
-                this.players.push( new Player(position, rotation, this)); break;
-            case OBJECT_TYPE.ASTEROID:
-                this.asteroids.push( new Asteroid(position, rotation, velocity) ); break;
+                this.players.push( new Player(this, position, rotation)); break;
+            case OBJECT_TYPE.ASTEROID_BIG:
+                this.asteroids.push( new Asteroid(this, position, rotation, velocity, 20) ); break;
+            case OBJECT_TYPE.ASTEROID_MED:
+                this.asteroids.push( new Asteroid(this, position, rotation, velocity, 20) ); break;
+            case OBJECT_TYPE.ASTEROID_SML:
+                this.asteroids.push( new Asteroid(this, position, rotation, velocity, 20) ); break;
             case OBJECT_TYPE.BULLET:
-                this.bullets.push( new Bullet(position, velocity) ); break;
+                this.bullets.push( new Bullet(this, position, velocity) ); break;
         }
     }
 

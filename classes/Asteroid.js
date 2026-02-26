@@ -1,8 +1,10 @@
 class Asteroid extends GameObject {
-    constructor(position, rotation, velocity) {
-        super(position, rotation, velocity);
+    constructor(manager, position, rotation, velocity, pointValue) {
+        super(manager, position, rotation, velocity);
 
         this.collisionRad = 50;
+
+        this.pointValue = pointValue;
     }
     
     Update() {
@@ -15,7 +17,7 @@ class Asteroid extends GameObject {
             translate(this.position);
             rotate(this.rotation);
 
-            circle(0, 0, 100);
+            circle(0, 0, this.collisionRad * 2);
         pop();
     }
 
@@ -24,5 +26,14 @@ class Asteroid extends GameObject {
             this.position.add(this.velocity);
             this.ScreenWrap(50);
         pop();
+    }
+
+    DestroySelf() {
+        this.ApplyPointValue();
+        this.isAlive = false;
+    }
+
+    ApplyPointValue() {
+        this.manager.gameInstance.UpdateScore(this.pointValue);
     }
 }
