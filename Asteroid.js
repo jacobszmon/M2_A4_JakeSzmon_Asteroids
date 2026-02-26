@@ -21,7 +21,7 @@ class Asteroid extends GameObject {
     Move() {
         push();
             this.position.add(this.velocity);
-            console.log(this.position);
+            this.ScreenWrap(50);
         pop();
     }
 }

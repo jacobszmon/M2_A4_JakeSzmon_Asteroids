@@ -98,6 +98,7 @@ class Player extends GameObject {
 
             // Apply velocity to position.
             this.position.add(this.velocity);
+            this.ScreenWrap(20);
         pop();
     }
 
