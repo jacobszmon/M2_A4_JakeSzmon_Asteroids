@@ -14,6 +14,8 @@ class Player extends GameObject {
         this.rotationDir = 0;
         this.rotationSpeed = 0.2;
         this.angularVelocity = 0;
+        // ------ TELEPORTATION ------
+        this.teleportStopGap = true;
 
         this.Start();
     }
@@ -34,7 +36,7 @@ class Player extends GameObject {
             angleMode(DEGREES);
             translate(this.position);
             rotate(this.rotation);
-            
+
         // Draw ship
             quad(20, 0, -20, -15, -10, 0, -20, 15);
         pop();
@@ -55,6 +57,17 @@ class Player extends GameObject {
             this.engineActive = false;
             if (keyIsDown(UP_ARROW)) {
                 this.engineActive = true;
+            }
+
+        // TELEPORT INPUTS (ONLY FIRST FRAME IS NEEDED)
+            if (keyIsDown(DOWN_ARROW)) {
+                if (this.teleportStopGap) {
+                    this.Teleport();
+                }
+                this.teleportStopGap = false;
+            }
+            else {
+                this.teleportStopGap = true;
             }
         push();
     }
@@ -95,5 +108,11 @@ class Player extends GameObject {
         // Apply Angular Velocity to rotation (frame rate independent!).
             this.rotation += this.angularVelocity * deltaTime;
         pop();
+    }
+
+    Teleport() {
+        let randX = random(0, width);
+        let randY = random(0, height);
+        this.position = createVector(randX, randY);
     }
 }
