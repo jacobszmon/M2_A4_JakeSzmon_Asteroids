@@ -56,8 +56,10 @@ class Asteroid extends GameObject {
 
             switch(this.size){
                 case OBJECT_TYPE.ASTEROID_BIG:
+                    randVelocity.mult(1.3);
                     this.manager.InstantiateObject(OBJECT_TYPE.ASTEROID_MED, babyPos, randAngle, randVelocity); break;
                 case OBJECT_TYPE.ASTEROID_MED:
+                    randVelocity.mult(1.6);
                     this.manager.InstantiateObject(OBJECT_TYPE.ASTEROID_SML, babyPos, randAngle, randVelocity); break;
             }
 
