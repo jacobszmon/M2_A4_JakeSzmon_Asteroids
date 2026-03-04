@@ -28,6 +28,7 @@ class HUD {
                 let circlePosX = width - this.margins - (this.lifeSize/2) - (i * (this.lifeSize + this.margins));
                 let circlePosY = this.margins + (this.lifeSize/2);
 
+                fill(drawColor);
                 circle(circlePosX, circlePosY, this.lifeSize);
             }
             
