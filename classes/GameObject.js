@@ -8,6 +8,8 @@ class GameObject {
         this.isAlive = true;
 
         this.manager = manager;
+
+        this.tag;
     }
 
     Update() {

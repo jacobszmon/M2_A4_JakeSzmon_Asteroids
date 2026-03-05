@@ -16,10 +16,10 @@ class Player extends GameObject {
         // ------ TELEPORTATION ------
         this.teleportStopGap = true;
         // ------ SHOOTING ------
-        this.bulletSpeed = 5;
         this.shootingStopGap = true; 
         // ------ COLLISION ------
         this.collisionRad = 20;
+        this.tag = "Player";
         this.invincible = false;
         this.iDuration = 2;
         this.iElapsed = 0;
@@ -120,7 +120,7 @@ class Player extends GameObject {
                 let force = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.moveForce);
                 this.acceleration = p5.Vector.div(force, this.mass);
 
-                this.velocity.add(this.acceleration.mult(deltaTime));
+                this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime));
                 this.velocity.limit(this.maxVelocity);
             }
             // Otherwise, slow the ship down and stop moving when it gets slow enough.
@@ -156,7 +156,7 @@ class Player extends GameObject {
     Shoot() {
         
 
-        let bulletVelocity = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.bulletSpeed);
+        let bulletVelocity = createVector( cos(this.rotation), sin(this.rotation) );
 
         let bulletOrigin = this.position.copy();
 

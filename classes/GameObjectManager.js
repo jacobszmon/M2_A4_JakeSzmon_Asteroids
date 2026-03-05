@@ -6,80 +6,94 @@ class GameObjectManager {
         this.players = [];
         this.asteroids = [];
         this.bullets = [];
+        this.saucers = [];
 
-        this.gameObjectLists = [
-            this.players,
-            this.asteroids,
-            this.bullets,
-        ];
+        this.gameObjects = [];
     }
 
     InstantiateObject(type, position, rotation, velocity = createVector(0,0)) {
         switch (type) {
             case OBJECT_TYPE.PLAYER:
-                this.players.push( new Player(this, position, rotation)); break;
+                let player = new Player(this, position, rotation)
+                this.gameObjects.push( player ); 
+                this.players.push( player ); break;
             case OBJECT_TYPE.ASTEROID_BIG:
-                this.asteroids.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_BIG) ); break;
+                this.gameObjects.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_BIG) ); break;
             case OBJECT_TYPE.ASTEROID_MED:
-                this.asteroids.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_MED) ); break;
+                this.gameObjects.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_MED) ); break;
             case OBJECT_TYPE.ASTEROID_SML:
-                this.asteroids.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_SML) ); break;
+                this.gameObjects.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_SML) ); break;
             case OBJECT_TYPE.BULLET:
-                this.bullets.push( new Bullet(this, position, velocity) ); break;
+                this.gameObjects.push( new Bullet(this, position, velocity, "Good") ); break;
+            case OBJECT_TYPE.EVIL_BULLET:
+                this.gameObjects.push( new Bullet(this, position, velocity, "Evil") ); break;
+            case OBJECT_TYPE.SAUCER_BIG:
+                this.gameObjects.push( new Saucer(this, this.players, position, rotation)); break;
         }
     }
 
     ClearDestroyedObjects() {
-        this.players = this.players.filter(player => player.isAlive);
-        this.asteroids = this.asteroids.filter(asteroid => asteroid.isAlive);
-        this.bullets = this.bullets.filter(bullet => bullet.isAlive);
+        this.gameObjects = this.gameObjects.filter(gameObject => gameObject.isAlive);
     } 
 
     ClearAllObjects() {
-        this.players = [];
-        this.asteroids = [];
-        this.bullets = [];
+        this.gameObjects = [];
     }
 
     UpdateObjects() { 
-        this.players.forEach(player => player.Update());
-        this.asteroids.forEach(asteroid => asteroid.Update());
-        this.bullets.forEach(bullet => bullet.Update());
+        this.gameObjects.forEach(gameObject => gameObject.Update());
     }
 
     DrawObjects() {
-        this.bullets.forEach(bullet => bullet.Draw());
-        this.asteroids.forEach(asteroid => asteroid.Draw());
-        this.players.forEach(player => player.Draw());
+        this.gameObjects.forEach(gameObject => gameObject.Draw());
     }
 
 
     CheckCollisions() {
-        // ------ CHECK PLAYER COLLISIONS ------
-        this.players.forEach(player => {
-            this.asteroids.forEach(asteroid => {
-                if ((!player.invincible) && (this.AreObjectsColliding(player, asteroid))) {
-                    player.CollisionDetected();
-                    asteroid.CollisionDetected();
-                    deathSound.play();
-                }
-            })
-        });
-        // ------ CHECK ASTEROID COLLISIONS ------
-        this.asteroids.forEach(asteroid => {
-            this.bullets.forEach(bullet => {
-                if (this.AreObjectsColliding(asteroid, bullet)) {
-                    asteroid.CollisionDetected();
-                    bullet.CollisionDetected();
-                    deathSound.play();
-                }
-            })
+        let collisionObjects = new Array(...this.gameObjects);
+
+
+        this.gameObjects.forEach(gameObject => {
+            collisionObjects.splice(0, 1);
+
+            if (gameObject.tag === "Player" && gameObject.invincible) {
+
+            }
+            else {
+               collisionObjects.forEach(collisionObject => {
+
+                    if (this.AreObjectsColliding(gameObject, collisionObject)) {
+                        gameObject.CollisionDetected();
+                        collisionObject.CollisionDetected();
+                        deathSound.play();
+                    }
+                });
+            }
         });
     }
 
 
 
     AreObjectsColliding(object1, object2) {
+        let collisionIsValid = true;
+
+        switch (object1.tag) {
+            case "Player":
+                if (object2.tag === "Player" || object2.tag === "Good") collisionIsValid = false; break;
+            case "Asteroid":
+                if (object2.tag === "Asteroid") collisionIsValid = false; break;
+            case "Saucer":
+                if (object2.tag === "Saucer" || object2.tag === "Evil") collisionIsValid = false; break;
+            case "Good":
+                if (object2.tag === "Good" || object2.tag === "Evil") collisionIsValid = false; break;
+            case "Evil":
+                if (object2.tag === "Good" || object2.tag === "Evil") collisionIsValid = false; break;
+        }
+
+        if (!collisionIsValid) {
+            return false;
+        }
+
         let pos1 = object1.position;
         let pos2 = object2.position;
 

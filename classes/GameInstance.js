@@ -5,6 +5,7 @@ class GameInstance {
 
         this.score = 0;
         this.lifeThresholdAchieved = 0;
+        this.saucerThresholdAchieved = 0;
 
         this.gameObjectManager = new GameObjectManager(this);
 
@@ -57,6 +58,10 @@ class GameInstance {
             this.currentLives++;
             console.log("THRESHOLD PASSED");
             console.log(this.currentLives);
+        }
+        if (this.score - this.saucerThresholdAchieved >= 200) {
+            this.saucerThresholdAchieved += 200;
+            this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_BIG, createVector(width/2, height/2), 0);
         }
     }
 

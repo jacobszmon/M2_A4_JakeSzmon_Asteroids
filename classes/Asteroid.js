@@ -3,6 +3,7 @@ class Asteroid extends GameObject {
         super(manager, position, rotation, velocity);
 
         this.collisionRad;
+        this.tag = "Asteroid";
 
         this.size = size;
 
@@ -39,7 +40,7 @@ class Asteroid extends GameObject {
     Move() {
         push();
             this.position.add(this.velocity);
-            this.ScreenWrap(50);
+            this.ScreenWrap(this.collisionRad);
         pop();
     }
 

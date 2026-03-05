@@ -13,6 +13,9 @@ const OBJECT_TYPE = Object.freeze({
   ASTEROID_MED: 2,
   ASTEROID_SML: 3,
   BULLET: 4,
+  EVIL_BULLET: 5,
+  SAUCER_BIG: 6,
+  SAUCER_SML: 7,
 });
 
 let deathSound;
@@ -38,6 +41,8 @@ function setup() {
 
   gameInstance = new GameInstance();
   
+  gameMusic.loop();
+  gameMusic.setVolume(0.5);
 }
 
 function draw() {
@@ -46,6 +51,5 @@ function draw() {
 }
 
 function mouseClicked() {
-  gameMusic.loop();
-  gameMusic.setVolume(0.5);
+  userStartAudio();
 }
