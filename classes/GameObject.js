@@ -8,12 +8,6 @@ class GameObject {
         this.isAlive = true;
 
         this.manager = manager;
-
-        this.Start();
-    }
-
-    Start() {
-
     }
 
     Update() {

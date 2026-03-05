@@ -24,17 +24,24 @@ class Player extends GameObject {
         this.iDuration = 2;
         this.iElapsed = 0;
 
+        // ------ SOUNDS ------
+        this.thrusterVolume = 0;
+        this.fadeInSpeed = 1;
+        
         this.Start();
     }
 
     Start() {
-
+        thrusterSound.setVolume(1);
+        thrusterSound.loop();
+        console.log(this.thrusterVolume);
     }
 
     Update() {
         this.ParseInputs();
         this.Move();
         this.Rotate();
+        this.ThrusterVolume();
 
         if (this.invincible) {
             this.RunInvincibilityTimer();
@@ -54,6 +61,8 @@ class Player extends GameObject {
             }
             fill(fillColor);
         // Draw ship
+            if (this.engineActive)
+                triangle(-25, 0, 0,  10, 0, -10);
             quad(20, 0, -20, -15, -10, 0, -20, 15);
         pop();
     }
@@ -74,7 +83,7 @@ class Player extends GameObject {
             if (keyIsDown(UP_ARROW)) {
                 this.engineActive = true;
             }
-
+            
         // TELEPORT INPUTS (ONLY FIRST FRAME IS NEEDED)
             if (keyIsDown(DOWN_ARROW)) {
                 if (this.teleportStopGap) {
@@ -141,6 +150,7 @@ class Player extends GameObject {
         let randX = random(0, width);
         let randY = random(0, height);
         this.position = createVector(randX, randY);
+        teleportSound.play();
     }
 
     Shoot() {
@@ -149,16 +159,26 @@ class Player extends GameObject {
         let bulletVelocity = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.bulletSpeed);
 
         let bulletOrigin = this.position.copy();
+
+
+        let randPitch = random(0.8, 1.2);
+        laserSound.playbackRate = randPitch;
+        let randVolume = random(0.5, 0.7);
+        laserSound.setVolume(randVolume);
+
+        laserSound.play();
         
         this.manager.InstantiateObject(OBJECT_TYPE.BULLET, bulletOrigin, 0, bulletVelocity);
     }
 
     DestroySelf() {
-        this.manager.gameInstance.PlayerDied();
         this.position = createVector(width/2, height/2);
         this.velocity = createVector(0, 0);
         this.rotation = -90;
         this.invincible = true;
+        this.thrusterVolume = 0;
+        thrusterSound.setVolume(0);
+        this.manager.gameInstance.PlayerDied();
     }
 
     RunInvincibilityTimer() {
@@ -168,5 +188,20 @@ class Player extends GameObject {
             this.invincible = false;
             this.iElapsed = 0;
         }
+    }
+
+    ThrusterVolume() {
+        if (this.engineActive){
+            if (this.thrusterVolume < 0.3){
+                this.thrusterVolume += this.fadeInSpeed * (deltaTime/1000);
+            }
+        }
+        else {
+            if (this.thrusterVolume > 0){
+                this.thrusterVolume -= this.fadeInSpeed * (deltaTime/1000);
+            }
+        }
+
+        thrusterSound.setVolume(this.thrusterVolume);
     }
 }

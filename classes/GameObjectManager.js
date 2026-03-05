@@ -61,6 +61,7 @@ class GameObjectManager {
                 if ((!player.invincible) && (this.AreObjectsColliding(player, asteroid))) {
                     player.CollisionDetected();
                     asteroid.CollisionDetected();
+                    deathSound.play();
                 }
             })
         });
@@ -70,6 +71,7 @@ class GameObjectManager {
                 if (this.AreObjectsColliding(asteroid, bullet)) {
                     asteroid.CollisionDetected();
                     bullet.CollisionDetected();
+                    deathSound.play();
                 }
             })
         });
