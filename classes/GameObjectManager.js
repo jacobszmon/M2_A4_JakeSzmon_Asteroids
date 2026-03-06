@@ -42,6 +42,12 @@ class GameObjectManager {
         this.gameObjects = [];
     }
 
+    CheckIfLevelFinished() {
+        if (this.gameObjects.length <= this.players.length && this.players.length > 0) {
+            this.gameInstance.LevelUp();
+        }
+    }
+
     UpdateObjects() { 
         this.gameObjects.forEach(gameObject => gameObject.Update());
     }

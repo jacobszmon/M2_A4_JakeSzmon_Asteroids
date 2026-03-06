@@ -3,6 +3,8 @@ class GameInstance {
         this.maxLives = 3;
         this.currentLives = 3;
 
+        this.currentLevel = 1;
+
         this.score = 0;
         this.lifeThresholdAchieved = 0;
         this.saucerThresholdAchieved = 0;
@@ -17,16 +19,7 @@ class GameInstance {
     Start() {
         this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(width/2, height/2), -90);
 
-        push();
-        for (let i = 0; i < 5; i++) {
-            angleMode(DEGREES);
-            let randX = random(0, width);
-            let randY = random(0, height);
-            let randAngle = random(0, 360);
-            let randVelocity = p5.Vector.random2D().mult(1);
-            this.gameObjectManager.InstantiateObject(OBJECT_TYPE.ASTEROID_BIG, createVector(randX, randY), randAngle, randVelocity)
-        }
-        pop();
+        this.SpawnEnemyWave();
     }
 
 
@@ -40,11 +33,26 @@ class GameInstance {
 
         this.CheckScoreThresholds();
         this.CheckLives();
+        this.gameObjectManager.CheckIfLevelFinished();
     }
 
     PlayerDied() {
         this.currentLives--;
         console.log(this.currentLives);
+    }
+
+
+    SpawnEnemyWave() {
+        push();
+        for (let i = 0; i < this.currentLevel; i++) {
+            angleMode(DEGREES);
+            let randX = random(0, width);
+            let randY = random(0, height);
+            let randAngle = random(0, 360);
+            let randVelocity = p5.Vector.random2D().mult(1);
+            this.gameObjectManager.InstantiateObject(OBJECT_TYPE.ASTEROID_BIG, createVector(randX, randY), randAngle, randVelocity)
+        }
+        pop();
     }
 
     UpdateScore(delta) {
@@ -61,8 +69,8 @@ class GameInstance {
         }
 
 
-        if (this.score - this.saucerThresholdAchieved >= 500) {
-            this.saucerThresholdAchieved += 500;
+        if (this.score - this.saucerThresholdAchieved >= 750) {
+            this.saucerThresholdAchieved += 750;
 
             let bigChance = 0.75;
 
@@ -87,5 +95,10 @@ class GameInstance {
     GameOver() {
         console.log("Game Over");
         this.gameObjectManager.ClearAllObjects();
+    }
+
+    LevelUp() {
+        this.currentLevel++;
+        this.SpawnEnemyWave();
     }
 }

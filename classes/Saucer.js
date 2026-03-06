@@ -38,6 +38,7 @@ class Saucer extends GameObject {
                     point[1] = point [1] * scaleBoost;
                 });
                 this.accuracy = 45; 
+                this.pointValue = 200;
                 break;
             case OBJECT_TYPE.SAUCER_SML:
                 scaleBoost = 0.75;
@@ -46,6 +47,7 @@ class Saucer extends GameObject {
                     point[1] = point [1] * scaleBoost;
                 });
                 this.accuracy = 20;
+                this.pointValue = 1000;
                 this.improvementEnabled = true;
                 break;
         }
