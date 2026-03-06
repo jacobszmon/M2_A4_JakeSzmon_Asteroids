@@ -11,6 +11,7 @@ class Saucer extends GameObject {
         this.timeBetweenShots = 2;
         this.lastTimeShot = 0;
         this.accuracy = 0;
+        this.improvementEnabled = false;
 
         this.pointValue = 200;
 
@@ -36,7 +37,8 @@ class Saucer extends GameObject {
                     point[0] = point[0] * scaleBoost;
                     point[1] = point [1] * scaleBoost;
                 });
-                this.accuracy = 40;
+                this.accuracy = 45; 
+                break;
             case OBJECT_TYPE.SAUCER_SML:
                 scaleBoost = 0.75;
                 this.shape.forEach(point => {
@@ -44,6 +46,8 @@ class Saucer extends GameObject {
                     point[1] = point [1] * scaleBoost;
                 });
                 this.accuracy = 20;
+                this.improvementEnabled = true;
+                break;
         }
 
         this.players = players;
@@ -100,6 +104,15 @@ class Saucer extends GameObject {
     }
 
     AimAtAPlayer() {
+        let  finAccuracy;
+        if (this.improvementEnabled) {
+            finAccuracy = this.accuracy - (this.accuracy * this.manager.gameInstance.score / 10000);
+        } 
+        else {
+            finAccuracy = this.accuracy;
+            console.log(finAccuracy);
+        }
+
         let playerPos = random(this.players).position;
 
         let aimDir = p5.Vector.sub(playerPos, this.position);
@@ -108,7 +121,7 @@ class Saucer extends GameObject {
 
         
 
-        shotAngle += random(-this.accuracy, this.accuracy);
+        shotAngle += random(-finAccuracy, finAccuracy);
 
         let shotDir = createVector(cos(shotAngle), sin(shotAngle));
 
