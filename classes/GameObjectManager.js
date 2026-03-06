@@ -35,6 +35,7 @@ class GameObjectManager {
     }
 
     ClearDestroyedObjects() {
+        this.players = this.players.filter(player => player.isAlive);
         this.gameObjects = this.gameObjects.filter(gameObject => gameObject.isAlive);
     } 
 
@@ -43,7 +44,7 @@ class GameObjectManager {
     }
 
     CheckIfLevelFinished() {
-        if (this.gameObjects.length <= this.players.length && this.players.length > 0) {
+        if (this.gameObjects.length <= 1 && this.players.length != 0) {
             this.gameInstance.LevelUp();
         }
     }

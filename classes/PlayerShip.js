@@ -9,6 +9,7 @@ class Player extends GameObject {
         this.mass = 250;
         this.acceleration = createVector(0, 0);
         this.maxVelocity = 5;
+        this.forces = [];
         // ------ ROTATION ------
         this.rotationDir = 0;
         this.rotationSpeed = 200;
@@ -16,7 +17,8 @@ class Player extends GameObject {
         // ------ TELEPORTATION ------
         this.teleportStopGap = true;
         // ------ SHOOTING ------
-        this.shootingStopGap = true; 
+        this.shootingStopGap = true;
+        this.recoilMag = 1000000000;
         // ------ COLLISION ------
         this.collisionRad = 20;
         this.tag = "Player";
@@ -38,8 +40,17 @@ class Player extends GameObject {
     }
 
     Update() {
+        angleMode(DEGREES);
+
         this.ParseInputs();
+
+        this.ResetAcceleration();
+
+        this.BlastOff();
+        
+        this.ApplyForces();
         this.Move();
+
         this.Rotate();
         this.ThrusterVolume();
 
@@ -62,7 +73,7 @@ class Player extends GameObject {
             fill(fillColor);
         // Draw ship
             if (this.engineActive)
-                triangle(-25, 0, 0,  10, 0, -10);
+                triangle(-30, 0, -5,  10, -5, -10);
             quad(20, 0, -20, -15, -10, 0, -20, 15);
         pop();
     }
@@ -110,29 +121,46 @@ class Player extends GameObject {
 
 
     // ---------- ACTIONS ----------
+    BlastOff() {
+        if (this.engineActive) {
+            let force = createVector(cos(this.rotation), sin(this.rotation)).mult(this.moveForceMag);
+            this.forces.push(force);
+        }
+    }
+
+    ResetAcceleration() {
+        this.acceleration = createVector(0,0);
+        this.forces = [];
+    }
+
+    ApplyForces() {
+        this.forces.forEach(force => {
+            this.acceleration.add(p5.Vector.div(force, this.mass));
+        });  
+    }
+
     Move() {
         push();
-            // Set Angle mode for calculation
-            angleMode(DEGREES);
+            
+            // ACCELERATE -- Add acceleration to velocity, then cap velocity.
+            this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime/1000));
+            this.velocity.limit(this.maxVelocity);
+            
+            // APPLY DRAG -- Slow the ship down and stop moving when it gets slow enough.
+            if (!this.engineActive){
+               this.velocity.mult(0.98);
 
-            // When engine is active, apply move force in the direction the ship is facing.
-            if (this.engineActive) {
-                let force = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.moveForceMag);
-                this.acceleration = p5.Vector.div(force, this.mass);
-
-                this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime/1000));
-                this.velocity.limit(this.maxVelocity);
-            }
-            // Otherwise, slow the ship down and stop moving when it gets slow enough.
-            else {
-                this.velocity.mult(0.98);
                 if (this.velocity.mag() < 0.1) {
                     this.velocity.limit(0);
-                }
+                } 
             }
-
-            // Apply velocity to position.
+            
+            
+            // MOVE THAT BOY -- Apply velocity to position.
             this.position.add(this.velocity);
+
+
+            // WRAP ON SCREEN
             this.ScreenWrap(20);
         pop();
     }
@@ -154,13 +182,11 @@ class Player extends GameObject {
     }
 
     Shoot() {
-        
-
-        let bulletVelocity = createVector( cos(this.rotation), sin(this.rotation) );
-
+        // Get Bullet Direction and origin.
+        let bulletDirection = createVector(cos(this.rotation), sin(this.rotation));
         let bulletOrigin = this.position.copy();
 
-
+        // Play the laser sound at a random pitch and volume (for variation)
         let randPitch = random(0.8, 1.2);
         laserSound.playbackRate = randPitch;
         let randVolume = random(0.5, 0.7);
@@ -168,7 +194,13 @@ class Player extends GameObject {
 
         laserSound.play();
         
-        this.manager.InstantiateObject(OBJECT_TYPE.BULLET, bulletOrigin, 0, bulletVelocity);
+        // Make Bullet.
+        this.manager.InstantiateObject(OBJECT_TYPE.BULLET, bulletOrigin, 0, bulletDirection);
+
+        let recoilForce = p5.Vector.mult(bulletDirection, -this.recoilMag);
+        
+        this.forces.push(recoilForce);
+        console.log(this.forces);
     }
 
     DestroySelf() {
