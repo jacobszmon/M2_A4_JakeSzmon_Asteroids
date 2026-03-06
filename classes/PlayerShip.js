@@ -5,13 +5,13 @@ class Player extends GameObject {
         super(manager, position, rotation, velocity);
         // ------ MOVEMENT ------
         this.engineActive = false;
-        this.moveForceMag = 0.1;
+        this.moveForceMag = 1000;
         this.mass = 250;
         this.acceleration = createVector(0, 0);
         this.maxVelocity = 5;
         // ------ ROTATION ------
         this.rotationDir = 0;
-        this.rotationSpeed = 0.2;
+        this.rotationSpeed = 200;
         this.angularVelocity = 0;
         // ------ TELEPORTATION ------
         this.teleportStopGap = true;
@@ -117,10 +117,10 @@ class Player extends GameObject {
 
             // When engine is active, apply move force in the direction the ship is facing.
             if (this.engineActive) {
-                let force = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.moveForce);
+                let force = createVector( cos(this.rotation), sin(this.rotation) ).mult(this.moveForceMag);
                 this.acceleration = p5.Vector.div(force, this.mass);
 
-                this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime));
+                this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime/1000));
                 this.velocity.limit(this.maxVelocity);
             }
             // Otherwise, slow the ship down and stop moving when it gets slow enough.
@@ -142,7 +142,7 @@ class Player extends GameObject {
         // Get angular velocity.
             this.angularVelocity = this.rotationSpeed * this.rotationDir;
         // Apply Angular Velocity to rotation (frame rate independent!).
-            this.rotation += this.angularVelocity * deltaTime;
+            this.rotation += this.angularVelocity * deltaTime/1000;
         pop();
     }
 
