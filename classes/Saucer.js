@@ -28,15 +28,22 @@ class Saucer extends GameObject {
             [19, -6],
         ];
 
+        let scaleBoost = 1;
         switch (this.size) {
             case OBJECT_TYPE.SAUCER_BIG:
-                let scaleBoost = 1.5;
+                scaleBoost = 1.5;
                 this.shape.forEach(point => {
                     point[0] = point[0] * scaleBoost;
                     point[1] = point [1] * scaleBoost;
                 });
                 this.accuracy = 40;
-
+            case OBJECT_TYPE.SAUCER_SML:
+                scaleBoost = 0.75;
+                this.shape.forEach(point => {
+                    point[0] = point[0] * scaleBoost;
+                    point[1] = point [1] * scaleBoost;
+                });
+                this.accuracy = 20;
         }
 
         this.players = players;
@@ -84,26 +91,6 @@ class Saucer extends GameObject {
         }
     }
 
-
-    AimAtAPlayer() {
-        let playerPos = random(this.players).position;
-
-        let aimDir = p5.Vector.sub(playerPos, this.position);
-
-        let shotAngle = atan2(aimDir.y, aimDir.x);
-
-        if (shotAngle < 0) shotAngle = abs(shotAngle) + 180;
-
-        shotAngle += random(-this.accuracy, this.accuracy);
-
-        let shotDir = createVector(cos(shotAngle), sin(shotAngle));
-
-        return shotDir;
-    }
-
-
-
-
     Shoot() {
         let shotDir = this.AimAtAPlayer();
 
@@ -112,6 +99,21 @@ class Saucer extends GameObject {
         this.manager.InstantiateObject(OBJECT_TYPE.EVIL_BULLET, bulletOrigin, 0, shotDir);
     }
 
+    AimAtAPlayer() {
+        let playerPos = random(this.players).position;
+
+        let aimDir = p5.Vector.sub(playerPos, this.position);
+
+        let shotAngle = atan2(aimDir.y, aimDir.x);
+
+        
+
+        shotAngle += random(-this.accuracy, this.accuracy);
+
+        let shotDir = createVector(cos(shotAngle), sin(shotAngle));
+
+        return shotDir;
+    }
 
     RunActiveTimer() {
         this.timeActive += deltaTime/1000;

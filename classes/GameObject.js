@@ -36,7 +36,7 @@ class GameObject {
     }
 
     CollisionDetected() {
-        console.log("collision detected");
+        // console.log("collision detected");
         this.DestroySelf();
     }
 

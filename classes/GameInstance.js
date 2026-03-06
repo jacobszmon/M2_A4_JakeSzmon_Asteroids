@@ -49,7 +49,7 @@ class GameInstance {
 
     UpdateScore(delta) {
         this.score += delta;
-        console.log(this.score);
+        //console.log(this.score);
     }
 
     CheckScoreThresholds() {
@@ -59,9 +59,22 @@ class GameInstance {
             console.log("THRESHOLD PASSED");
             console.log(this.currentLives);
         }
-        if (this.score - this.saucerThresholdAchieved >= 1000) {
-            this.saucerThresholdAchieved += 1000;
-            this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_BIG, createVector(width/2, height/2), 0);
+
+
+        if (this.score - this.saucerThresholdAchieved >= 500) {
+            this.saucerThresholdAchieved += 500;
+
+            let bigChance = 0.75;
+
+            let randAngle = random(0, 360);
+            let randy = random(0, height);
+
+            if (random(0, 1) <= bigChance) {
+                this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_BIG, createVector(0, randy), randAngle);
+            }
+            else {
+                this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_SML, createVector(0, randy), randAngle);
+            }
         }
     }
 
