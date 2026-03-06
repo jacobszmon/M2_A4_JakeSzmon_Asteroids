@@ -24,11 +24,13 @@ class GameObjectManager {
             case OBJECT_TYPE.ASTEROID_SML:
                 this.gameObjects.push( new Asteroid(this, position, rotation, velocity, OBJECT_TYPE.ASTEROID_SML) ); break;
             case OBJECT_TYPE.BULLET:
-                this.gameObjects.push( new Bullet(this, position, velocity, "Good") ); break;
+                this.gameObjects.push( new Bullet(this, position, velocity, 5, "Good") ); break;
             case OBJECT_TYPE.EVIL_BULLET:
-                this.gameObjects.push( new Bullet(this, position, velocity, "Evil") ); break;
+                this.gameObjects.push( new Bullet(this, position, velocity, 5, "Evil") ); break;
             case OBJECT_TYPE.SAUCER_BIG:
-                this.gameObjects.push( new Saucer(this, this.players, position, rotation)); break;
+                this.gameObjects.push( new Saucer(this, this.players, position, rotation, OBJECT_TYPE.SAUCER_BIG)); break;
+            case OBJECT_TYPE.SAUCER_SML:
+                this.gameObjects.push( new Saucer(this, this.players, position, rotation, OBJECT_TYPE.SAUCER_SML)); break;
         }
     }
 

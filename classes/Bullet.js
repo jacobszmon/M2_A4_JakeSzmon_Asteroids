@@ -1,13 +1,13 @@
 class Bullet extends GameObject {
-    constructor (manager, position, velocity, tag) {
-        super(manager, position, 0, velocity);
+    constructor (manager, position, direction, speed, tag) {
+        super(manager, position, 0, createVector(0, 0));
 
-        this.lifespan = 1;
+        this.lifespan = 1.5;
         this.timeSinceBirth = 0;
 
-        this.bulletSpeed = 5;
+        this.bulletSpeed = speed;
 
-        this.velocity = p5.Vector.mult(velocity ,this.bulletSpeed);
+        this.velocity = p5.Vector.mult(direction ,this.bulletSpeed);
 
         this.collisionRad = 5;
 

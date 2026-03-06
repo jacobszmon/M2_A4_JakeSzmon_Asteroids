@@ -1,5 +1,5 @@
 class Saucer extends GameObject {
-    constructor(manager, players, position, rotation, velocity = createVector(0, 0)) {
+    constructor(manager, players, position, rotation, size, velocity = createVector(0, 0)) {
         super(manager, position, rotation, velocity);
 
         this.maxVelocity = 100;
@@ -10,12 +10,34 @@ class Saucer extends GameObject {
         this.switchFrequency = 2;
         this.timeBetweenShots = 2;
         this.lastTimeShot = 0;
+        this.accuracy = 0;
 
         this.pointValue = 200;
 
         this.collisionRad = 20;
 
         this.tag = "Saucer";
+
+        this.size = size;
+
+        this.shape = [
+            [0, -20],
+            [-19, -6],
+            [-12, 16],
+            [12, 16],
+            [19, -6],
+        ];
+
+        switch (this.size) {
+            case OBJECT_TYPE.SAUCER_BIG:
+                let scaleBoost = 1.5;
+                this.shape.forEach(point => {
+                    point[0] = point[0] * scaleBoost;
+                    point[1] = point [1] * scaleBoost;
+                });
+                this.accuracy = 40;
+
+        }
 
         this.players = players;
     }
@@ -46,11 +68,9 @@ class Saucer extends GameObject {
             rotate(this.rotation);
 
             beginShape();
-                vertex(0, -20);
-                vertex(-19, -6);
-                vertex(-12, 16);
-                vertex(12, 16);
-                vertex(19, -6);
+                this.shape.forEach(point => {
+                    vertex(...point);
+                });
             endShape();
         pop();
     }
@@ -66,12 +86,23 @@ class Saucer extends GameObject {
 
 
     AimAtAPlayer() {
-        let player = random(this.players);
+        let playerPos = random(this.players).position;
 
-        let shotDirection = p5.Vector.sub(player.position, this.position).limit(1);
+        let aimDir = p5.Vector.sub(playerPos, this.position);
 
-        return shotDirection;
+        let shotAngle = atan2(aimDir.y, aimDir.x);
+
+        if (shotAngle < 0) shotAngle = abs(shotAngle) + 180;
+
+        shotAngle += random(-this.accuracy, this.accuracy);
+
+        let shotDir = createVector(cos(shotAngle), sin(shotAngle));
+
+        return shotDir;
     }
+
+
+
 
     Shoot() {
         let shotDir = this.AimAtAPlayer();

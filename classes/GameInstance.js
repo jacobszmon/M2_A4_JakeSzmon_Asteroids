@@ -18,7 +18,7 @@ class GameInstance {
         this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(width/2, height/2), -90);
 
         push();
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 5; i++) {
             angleMode(DEGREES);
             let randX = random(0, width);
             let randY = random(0, height);
@@ -59,8 +59,8 @@ class GameInstance {
             console.log("THRESHOLD PASSED");
             console.log(this.currentLives);
         }
-        if (this.score - this.saucerThresholdAchieved >= 200) {
-            this.saucerThresholdAchieved += 200;
+        if (this.score - this.saucerThresholdAchieved >= 1000) {
+            this.saucerThresholdAchieved += 1000;
             this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_BIG, createVector(width/2, height/2), 0);
         }
     }
