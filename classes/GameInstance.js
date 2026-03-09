@@ -15,6 +15,8 @@ class GameInstance {
 
         this.gameIsOver = false;
 
+        this.camera = new Camera();
+
         this.Start();
     }
 
@@ -26,11 +28,16 @@ class GameInstance {
 
 
     GameUpdate() {
-        this.gameObjectManager.UpdateObjects();
-        this.gameObjectManager.DrawObjects();
-        this.gameObjectManager.CheckCollisions();
-        this.gameObjectManager.ClearDestroyedObjects();
 
+        push();
+            this.camera.Update();
+            this.gameObjectManager.UpdateObjects();
+            this.gameObjectManager.DrawObjects();
+            this.gameObjectManager.CheckCollisions();
+            this.gameObjectManager.ClearDestroyedObjects();
+        pop();
+
+        resetMatrix();
         this.gameHUD.Draw();
 
         this.CheckScoreThresholds();

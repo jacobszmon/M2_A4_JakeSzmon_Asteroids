@@ -212,6 +212,7 @@ class Player extends GameObject {
         this.invincible = true;
         this.thrusterVolume = 0;
         thrusterSound.setVolume(0);
+        this.manager.gameInstance.camera.AddCameraTrauma(0.7);
         this.manager.gameInstance.PlayerDied();
     }
 

@@ -68,6 +68,7 @@ class Asteroid extends GameObject {
         }
         pop();
 
+        this.manager.gameInstance.camera.AddCameraTrauma(0.5);
 
         this.isAlive = false;
     }
