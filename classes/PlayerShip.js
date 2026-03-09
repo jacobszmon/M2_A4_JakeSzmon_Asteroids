@@ -9,7 +9,6 @@ class Player extends GameObject {
         this.mass = 250;
         this.acceleration = createVector(0, 0);
         this.maxVelocity = 5;
-        this.forces = [];
         // ------ ROTATION ------
         this.rotationDir = 0;
         this.rotationSpeed = 200;
@@ -18,7 +17,7 @@ class Player extends GameObject {
         this.teleportStopGap = true;
         // ------ SHOOTING ------
         this.shootingStopGap = true;
-        this.recoilMag = 1000000000;
+        this.recoilMag = 1000;
         // ------ COLLISION ------
         this.collisionRad = 20;
         this.tag = "Player";
@@ -48,7 +47,6 @@ class Player extends GameObject {
 
         this.BlastOff();
         
-        this.ApplyForces();
         this.Move();
 
         this.Rotate();
@@ -124,7 +122,7 @@ class Player extends GameObject {
     BlastOff() {
         if (this.engineActive) {
             let force = createVector(cos(this.rotation), sin(this.rotation)).mult(this.moveForceMag);
-            this.forces.push(force);
+            this.ApplyForce(force);
         }
     }
 
@@ -133,10 +131,15 @@ class Player extends GameObject {
         this.forces = [];
     }
 
-    ApplyForces() {
-        this.forces.forEach(force => {
-            this.acceleration.add(p5.Vector.div(force, this.mass));
-        });  
+    ApplyForce(force, isImpulse = false) {
+        let accel = p5.Vector.div(force, this.mass);
+        if (isImpulse) {
+            this.velocity.add(accel);
+        }
+        else {
+            this.acceleration.add(accel);
+        }
+        
     }
 
     Move() {
@@ -199,8 +202,7 @@ class Player extends GameObject {
 
         let recoilForce = p5.Vector.mult(bulletDirection, -this.recoilMag);
         
-        this.forces.push(recoilForce);
-        console.log(this.forces);
+        this.ApplyForce(recoilForce, true);
     }
 
     DestroySelf() {

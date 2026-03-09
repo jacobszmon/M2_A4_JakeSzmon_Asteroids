@@ -44,7 +44,10 @@ class GameObjectManager {
     }
 
     CheckIfLevelFinished() {
-        if (this.gameObjects.length <= 1 && this.players.length != 0) {
+        if (this.gameInstance.gameIsOver){
+            return;
+        }
+        if (this.gameObjects.length <= 1) {
             this.gameInstance.LevelUp();
         }
     }

@@ -13,6 +13,8 @@ class GameInstance {
 
         this.gameHUD = new HUD(this);
 
+        this.gameIsOver = false;
+
         this.Start();
     }
 
@@ -95,6 +97,7 @@ class GameInstance {
     GameOver() {
         console.log("Game Over");
         this.gameObjectManager.ClearAllObjects();
+        this.gameIsOver = true;
     }
 
     LevelUp() {
