@@ -206,7 +206,7 @@ class Player extends GameObject {
     }
 
     DestroySelf() {
-        this.position = createVector(width/2, height/2);
+        this.position = createVector(0, 0);
         this.velocity = createVector(0, 0);
         this.rotation = -90;
         this.invincible = true;

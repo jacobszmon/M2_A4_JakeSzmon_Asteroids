@@ -21,21 +21,25 @@ class GameInstance {
     }
 
     Start() {
-        this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(width/2, height/2), -90);
+        translate(width/2, height/2);
+
+        this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(0, 0), -90);
 
         this.SpawnEnemyWave();
     }
 
 
     GameUpdate() {
+        translate(width/2, height/2);
 
-        push();
-            this.camera.Update();
-            this.gameObjectManager.UpdateObjects();
-            this.gameObjectManager.DrawObjects();
-            this.gameObjectManager.CheckCollisions();
-            this.gameObjectManager.ClearDestroyedObjects();
-        pop();
+        this.camera.Update();
+        //rect(0, 0, width, height);
+        this.gameObjectManager.UpdateObjects();
+        this.gameObjectManager.DrawObjects();
+        this.gameObjectManager.CheckCollisions();
+        this.gameObjectManager.ClearDestroyedObjects();
+
+        
 
         resetMatrix();
         this.gameHUD.Draw();
@@ -47,7 +51,6 @@ class GameInstance {
 
     PlayerDied() {
         this.currentLives--;
-        console.log(this.currentLives);
     }
 
 
@@ -55,8 +58,8 @@ class GameInstance {
         push();
         for (let i = 0; i < this.currentLevel; i++) {
             angleMode(DEGREES);
-            let randX = random(0, width);
-            let randY = random(0, height);
+            let randX = random(-width/2, width/2);
+            let randY = random(-height/2, height/2);
             let randAngle = random(0, 360);
             let randVelocity = p5.Vector.random2D().mult(1);
             this.gameObjectManager.InstantiateObject(OBJECT_TYPE.ASTEROID_BIG, createVector(randX, randY), randAngle, randVelocity)
@@ -74,7 +77,6 @@ class GameInstance {
             this.lifeThresholdAchieved += 10000;
             this.currentLives++;
             console.log("THRESHOLD PASSED");
-            console.log(this.currentLives);
         }
 
 
@@ -84,7 +86,7 @@ class GameInstance {
             let bigChance = 0.75;
 
             let randAngle = random(0, 360);
-            let randy = random(0, height);
+            let randy = random(-height/2, height/2);
 
             if (random(0, 1) <= bigChance) {
                 this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_BIG, createVector(0, randy), randAngle);

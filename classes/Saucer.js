@@ -12,6 +12,7 @@ class Saucer extends GameObject {
         this.lastTimeShot = 0;
         this.accuracy = 0;
         this.improvementEnabled = false;
+        this.movementTracking = false;
 
         this.pointValue = 200;
 
@@ -49,6 +50,9 @@ class Saucer extends GameObject {
                 this.accuracy = 20;
                 this.pointValue = 1000;
                 this.improvementEnabled = true;
+                if (this.manager.gameInstance.score >= 1500) {
+                    this.movementTracking = true;
+                }
                 break;
         }
 
@@ -106,27 +110,41 @@ class Saucer extends GameObject {
     }
 
     AimAtAPlayer() {
-        let  finAccuracy;
+
+        // Set Accuracy Level:
+        let  finAccuracy = this.accuracy;
+        // If the saucer can improve their aim, minimize the accuracy range with score, reaching 0 (perfect accuracy) at 10000 points.
         if (this.improvementEnabled) {
             finAccuracy = this.accuracy - (this.accuracy * this.manager.gameInstance.score / 10000);
         } 
-        else {
-            finAccuracy = this.accuracy;
-            console.log(finAccuracy);
+
+
+        // Pick a random target from the list of players.
+        let target = random(this.players)
+
+        // Get their position.
+        let playerPos = target.position;
+        // FOR TESTING
+        // console.log(playerPos);
+
+        // If movement tracking is enabled, aim for where the player is going, not where they are.
+        if (this.movementTracking) {
+            playerPos = p5.Vector.add(playerPos, target.velocity);
         }
+        // FOR TESTING
+        // console.log(playerPos);
 
-        let playerPos = random(this.players).position;
 
+        // Get the angle from the saucer to the target
         let aimDir = p5.Vector.sub(playerPos, this.position);
-
         let shotAngle = atan2(aimDir.y, aimDir.x);
 
         
-
+        // deviate the shot angle by the saucer's accuracy.
         shotAngle += random(-finAccuracy, finAccuracy);
 
+        // create a unit vector for that angle, which we can give to the bullet that will spawn.
         let shotDir = createVector(cos(shotAngle), sin(shotAngle));
-
         return shotDir;
     }
 

@@ -21,17 +21,17 @@ class GameObject {
     }
 
     ScreenWrap(offset) {
-        if (this.position.x < -offset){
-            this.position.x = width + offset;
+        if (this.position.x < (-width/2)-offset){
+            this.position.x = (width/2) + offset;
         }
-        else if (this.position.x > width + offset){
-            this.position.x = -offset;
+        else if (this.position.x > (width/2) + offset){
+            this.position.x = (-width/2)-offset;
         }
-        if (this.position.y < -offset){
-            this.position.y = height + offset;
+        if (this.position.y < (-height/2)-offset){
+            this.position.y = (height/2) + offset;
         }
-        else if (this.position.y > height + offset){
-            this.position.y = -offset;
+        else if (this.position.y > (height/2) + offset){
+            this.position.y = (-height/2)-offset;
         }
     }
 

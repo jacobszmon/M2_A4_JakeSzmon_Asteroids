@@ -40,7 +40,7 @@ class Camera {
         let offsetY = this.maxOffset * Math.pow(this.trauma, 2) * random(-1, 1);
 
         this.rotation = this.normalRot + shakeAngle;
-        this.position = p5.Vector.add(this.position, createVector(offsetX, offsetY));
+        this.position = p5.Vector.add(this.normalPos, createVector(offsetX, offsetY));
     }
 
     AddCameraTrauma(amount) {
