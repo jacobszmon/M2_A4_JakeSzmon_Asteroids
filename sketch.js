@@ -29,7 +29,9 @@ function mouseClicked() {
 }
 
 // ------ GLOBAL GAME VARIABLES ------
+let mainMenu;
 let gameInstance;
+let gameActive = false;
 
 const OBJECT_TYPE = Object.freeze({
   PLAYER: 0,
@@ -46,12 +48,17 @@ const OBJECT_TYPE = Object.freeze({
 function setup() {
   createCanvas(800, 800);
   
-  gameInstance = new GameInstance();
+  mainMenu = new MainMenu();
+  //gameInstance = new GameInstance();
 }
 
 function draw() {
   background(0);
-  gameInstance.GameUpdate();
+  if (gameActive){
+    gameInstance.GameUpdate();
+  }
+  
+  mainMenu.Draw();
 }
 
 

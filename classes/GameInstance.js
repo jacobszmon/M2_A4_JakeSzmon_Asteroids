@@ -21,32 +21,36 @@ class GameInstance {
     }
 
     Start() {
-        translate(width/2, height/2);
+        push();
+            translate(width/2, height/2);
 
-        this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(0, 0), -90);
+            this.gameObjectManager.InstantiateObject(OBJECT_TYPE.PLAYER, createVector(0, 0), -90);
 
-        this.SpawnEnemyWave();
+            this.SpawnEnemyWave();
+        pop();
     }
 
 
     GameUpdate() {
-        translate(width/2, height/2);
+        push();
+            translate(width/2, height/2);
 
-        this.camera.Update();
-        //rect(0, 0, width, height);
-        this.gameObjectManager.UpdateObjects();
-        this.gameObjectManager.DrawObjects();
-        this.gameObjectManager.CheckCollisions();
-        this.gameObjectManager.ClearDestroyedObjects();
+            this.camera.Update();
+            //rect(0, 0, width, height);
+            this.gameObjectManager.UpdateObjects();
+            this.gameObjectManager.DrawObjects();
+            this.gameObjectManager.CheckCollisions();
+            this.gameObjectManager.ClearDestroyedObjects();
 
-        
+            
 
-        resetMatrix();
-        this.gameHUD.Draw();
+            resetMatrix();
+            this.gameHUD.Draw();
 
-        this.CheckScoreThresholds();
-        this.CheckLives();
-        this.gameObjectManager.CheckIfLevelFinished();
+            this.CheckScoreThresholds();
+            this.CheckLives();
+            this.gameObjectManager.CheckIfLevelFinished();
+        pop();
     }
 
     PlayerDied() {
@@ -107,10 +111,19 @@ class GameInstance {
         console.log("Game Over");
         this.gameObjectManager.ClearAllObjects();
         this.gameIsOver = true;
+
+        this.EndGame();
     }
 
     LevelUp() {
         this.currentLevel++;
         this.SpawnEnemyWave();
+    }
+
+
+    EndGame() {
+        gameInstance = undefined;
+        gameActive = false;
+        mainMenu.ToggleVisibility();
     }
 }
