@@ -24,8 +24,10 @@ function preload() {
 
 function mouseClicked() {
   userStartAudio();
-  gameMusic.loop();
-  gameMusic.setVolume(0.5);
+  if (!gameMusic.isPlaying()) {
+    gameMusic.loop();
+    gameMusic.setVolume(0.5);
+  }
 }
 
 // ------ GLOBAL GAME VARIABLES ------

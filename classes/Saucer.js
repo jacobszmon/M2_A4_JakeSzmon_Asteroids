@@ -26,7 +26,7 @@ class Saucer extends GameObject {
             [0, -20],
             [-19, -6],
             [-12, 16],
-            [12, 16],
+            [12, 16], 
             [19, -6],
         ];
 
@@ -84,10 +84,15 @@ class Saucer extends GameObject {
             translate(this.position);
             rotate(this.rotation);
 
+            noFill();
+            stroke("white");
+            strokeWeight(2.5);
+            
             beginShape();
                 this.shape.forEach(point => {
                     vertex(...point);
                 });
+                vertex(...this.shape[0]);
             endShape();
         pop();
     }

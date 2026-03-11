@@ -29,6 +29,15 @@ class Player extends GameObject {
         this.thrusterVolume = 0;
         this.fadeInSpeed = 1;
         
+
+        // ------ SHAPE ------
+        this.shape = [
+            [20, 0],
+            [-20, -15],
+            [-10, 0],
+            [-20, 15],
+        ];
+
         this.Start();
     }
 
@@ -68,11 +77,18 @@ class Player extends GameObject {
             if ( (this.invincible) && (this.iElapsed % 0.6 >= 0.3) ) {
                 fillColor = color(255, 255, 255, 0);
             }
-            fill(fillColor);
+            noFill();
+            strokeWeight(2.5);
+            stroke(fillColor);
         // Draw ship
             if (this.engineActive)
                 triangle(-30, 0, -5,  10, -5, -10);
-            quad(20, 0, -20, -15, -10, 0, -20, 15);
+            beginShape();
+                this.shape.forEach(point => {
+                    vertex(...point);
+                });
+                vertex(...this.shape[0]);
+            endShape();
         pop();
     }
 

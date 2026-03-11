@@ -47,9 +47,12 @@ class GameInstance {
             resetMatrix();
             this.gameHUD.Draw();
 
-            this.CheckScoreThresholds();
-            this.CheckLives();
-            this.gameObjectManager.CheckIfLevelFinished();
+            if (!this.gameIsOver){
+                this.CheckScoreThresholds();
+                this.CheckLives();
+                this.gameObjectManager.CheckIfLevelFinished();  
+            }
+            
         pop();
     }
 
@@ -103,16 +106,17 @@ class GameInstance {
 
     CheckLives() {
         if (this.currentLives <= 0) {
+            this.gameObjectManager.players[0].isAlive = false;
             this.GameOver();
         }
     }
 
     GameOver() {
         console.log("Game Over");
-        this.gameObjectManager.ClearAllObjects();
+        // this.gameObjectManager.ClearAllObjects();
+        mainMenu.SetMode(MainMenu.MODES.SAVE);
         this.gameIsOver = true;
-
-        this.EndGame();
+        
     }
 
     LevelUp() {
@@ -124,6 +128,5 @@ class GameInstance {
     EndGame() {
         gameInstance = undefined;
         gameActive = false;
-        mainMenu.ToggleVisibility();
     }
 }

@@ -9,17 +9,51 @@ class Asteroid extends GameObject {
 
         this.pointValue;
 
+        this.shape = [
+        ];
+        
+
+        let vertexCount = 20;
+        let noiseScale = 5;
+        let scaleMin = 1;
         switch(this.size){
             case OBJECT_TYPE.ASTEROID_BIG:
+                vertexCount = 25;
+                scaleMin= 40;
+                noiseScale = 25;
+                
                 this.pointValue = 20; 
                 this.collisionRad = 50; break;
             case OBJECT_TYPE.ASTEROID_MED:
+                vertexCount = 16;
+                scaleMin = 20;
+                noiseScale = 20;
                 this.pointValue = 50;
                 this.collisionRad = 25; break;
             case OBJECT_TYPE.ASTEROID_SML:
+                vertexCount = 8;
+                scaleMin = 10;
+                noiseScale = 15;
                 this.pointValue = 100;
                 this.collisionRad = 12; break;
         }
+
+        push();
+            angleMode(DEGREES);
+            for (let i = 0; i < vertexCount; i++){
+                
+
+                let radialNoise = noise(ceil(random(0, 10))+i/10);
+
+                let radius = scaleMin + (noiseScale * radialNoise);
+
+                let x = radius * cos( i/vertexCount * 360);
+                let y = radius * sin( i/vertexCount * 360);
+                this.shape.push([x, y]);
+            }
+        pop();
+
+        
         
     }
     
@@ -33,7 +67,16 @@ class Asteroid extends GameObject {
             translate(this.position);
             rotate(this.rotation);
 
-            circle(0, 0, this.collisionRad * 2);
+            noFill();
+            stroke("white");
+            strokeWeight(2.5);
+            
+            beginShape();
+                this.shape.forEach(point => {
+                    vertex(...point);
+                });
+                vertex(...this.shape[0]);
+            endShape();
         pop();
     }
 

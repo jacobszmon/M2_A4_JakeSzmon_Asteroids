@@ -11,6 +11,22 @@ class Bullet extends GameObject {
 
         this.collisionRad = 5;
 
+        this.shape = [
+        ];
+        this.vertexCount = 8;
+        push();
+            angleMode(DEGREES);
+            for (let i = 0; i < this.vertexCount; i++){
+                
+                let radius = this.collisionRad;
+
+                let x = radius * cos( i/this.vertexCount * 360);
+                let y = radius * sin( i/this.vertexCount * 360);
+                this.shape.push([x, y]);
+            }
+        pop();
+
+
         this.tag = tag;
     }
 
@@ -25,7 +41,15 @@ class Bullet extends GameObject {
             translate(this.position);
             rotate(this.rotation);
 
-            circle(0, 0, 10);
+            noFill();
+            stroke("white");
+            strokeWeight(2.5);
+            beginShape();
+                this.shape.forEach(point => {
+                    vertex(...point);
+                });
+                vertex(...this.shape[0]);
+            endShape();
         pop();
     }
 
