@@ -50,9 +50,9 @@ class Player extends GameObject {
     Update() {
         angleMode(DEGREES);
 
-        this.ParseInputs();
-
         this.ResetAcceleration();
+
+        this.ParseInputs();
 
         this.BlastOff();
         
@@ -144,7 +144,6 @@ class Player extends GameObject {
 
     ResetAcceleration() {
         this.acceleration = createVector(0,0);
-        this.forces = [];
     }
 
     ApplyForce(force, isImpulse = false) {
@@ -194,8 +193,8 @@ class Player extends GameObject {
     }
 
     Teleport() {
-        let randX = random(0, width);
-        let randY = random(0, height);
+        let randX = random(-width/2, width/2);
+        let randY = random(-height/2, height/2);
         this.position = createVector(randX, randY);
         teleportSound.play();
     }

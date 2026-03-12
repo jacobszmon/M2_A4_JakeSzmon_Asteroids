@@ -138,64 +138,24 @@ class MainMenu {
     }
 
     GetHistory() {
-        
-        fetch('data/Scores.json').then(response => {
-            if (!response.ok) {
-                throw new Error('The JSON might be a tad fucked');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            this.history = data;
-        })  
-        .catch(error => console.error('Failed to fetch data:', error));
-        
-        /*
-        const fs = require('fs');
-        const path = require('path');
+        if (localStorage.getItem("History") != "") {
+            this.history = JSON.parse(localStorage.getItem("History"));
 
-        const filePath = path.join(process.cwd(), 'data/Scores.json');
-
-        fs.readFile(filePath, 'utf8', (err, contents) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-
-            try {
-                this.history = JSON.parse(contents);
-                console.log(this.history);
-            }
-            catch (jsonError) {
-                console.error('Error Parsing JSON');
-            }
-        });
-        */
+            this.history.sort((a, b) => b.score - a.score);
+        }
+        else
+        {
+            this.history = [];
+        }
     }
     
 
     AddNewHistory() {
         this.history.push({name: this.nameInput.value(), score: gameInstance.score});
+        this.history.sort((a, b) => b.score - a.score);
+
+        localStorage.setItem("History", JSON.stringify(this.history));
         this.nameInput.value("");
-
-        /*
-        const fs = require('fs');
-        const path = require('path');
-
-        const jsonString = JSON.stringify(this.history);
-
-        const filePath = path.join(process.cwd(), 'data/Scores.json');
-
-        fs.writeFile(filePath, jsonString, (err) => {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                console.log('File Was Written Successfully');
-            }
-        });
-        */
     }
 
     
