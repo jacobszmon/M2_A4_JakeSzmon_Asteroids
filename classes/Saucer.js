@@ -3,6 +3,9 @@ class Saucer extends GameObject {
         super(manager, position, rotation, velocity);
 
         this.maxVelocity = 100;
+        this.acceleration = createVector(0, 0);
+        this.mass = 150;
+        this.thrustForce = 750;
 
         this.moveDirection = createVector(0, 1);
 
@@ -18,16 +21,26 @@ class Saucer extends GameObject {
 
         this.collisionRad = 20;
 
+        this.concernRad = 150;
+        this.chaseRad = 50;
+
         this.tag = "Saucer";
 
         this.size = size;
 
         this.shape = [
-            createVector(0, -20),
-            createVector(-19, -6),
-            createVector(-12, 16),
-            createVector(12, 16), 
-            createVector(19, -6),
+            createVector(-10, -20),
+            createVector(10, -20),
+            createVector(10, -10),
+            createVector(20, -10),
+            createVector(20, 10),
+            createVector(10, 10),
+            createVector(10, 20),
+            createVector(-10, 20),
+            createVector(-10, 10),
+            createVector(-20, 10),
+            createVector(-20, -10),
+            createVector(-10, -10),
         ];
 
         let scaleBoost = 1;
@@ -39,6 +52,7 @@ class Saucer extends GameObject {
                 });
                 this.accuracy = 45; 
                 this.pointValue = 200;
+                this.Move = this.MoveDumbly;
                 break;
             case OBJECT_TYPE.SAUCER_SML:
                 scaleBoost = 0.75;
@@ -50,7 +64,8 @@ class Saucer extends GameObject {
                 this.improvementEnabled = true;
                 if (this.manager.gameInstance.score >= 1500) {
                     this.movementTracking = true;
-                }
+                };
+                this.Move = this.MoveSmartly;
                 break;
         }
 
@@ -64,7 +79,7 @@ class Saucer extends GameObject {
         this.ScreenWrap(this.collisionRad);
     }
 
-    Move() {
+    MoveDumbly() {
         if (this.timeActive % (this.switchFrequency * 2) <= this.switchFrequency){
             this.moveDirection = createVector(cos(this.rotation), sin(this.rotation));
         }
@@ -77,6 +92,67 @@ class Saucer extends GameObject {
         this.position.add(p5.Vector.mult(this.velocity, deltaTime/1000));
     }
 
+    MoveSmartly() {
+        let enemies = new Array(...this.manager.gameObjects);
+        // FILTER 1: FILTER OTHER SAUCERS AND EVIL BULLETS FROM THE ARRAY.
+        enemies = enemies.filter(object => object.tag != "Saucer");
+        enemies = enemies.filter(object => object.tag != "Evil");
+        
+        
+        // FILTER 2: If an Enemy is not a concern, don't worry about them.
+        enemies = enemies.filter(enemy => {
+            let distance = this.position.dist(enemy.position);
+            return (distance < this.concernRad);
+        });
+
+        // What Direction should I go? Away from the enemy, obviously!
+        let enemyDirection = createVector(0, 0);
+        enemies.forEach(enemy => {
+            let x = (abs(enemy.position.x - this.position.x) > this.chaseRad)? enemy.position.x: this.position.x;
+            let y = (abs(enemy.position.y - this.position.y) > this.chaseRad)? enemy.position.y: this.position.y;
+
+            let priority = this.concernRad - this.position.dist(enemy.position);
+
+            let dirToEnemy = p5.Vector.sub(createVector(x, y), this.position).limit(1);
+
+            enemyDirection.add(dirToEnemy);
+        });
+        
+
+        this.acceleration = createVector(0, 0);
+
+        let xDir = 0;
+        if (enemyDirection.x > 0) xDir = -1;
+        else if (enemyDirection.x < 0) xDir = 1;
+
+        let yDir = 0;
+        if (enemyDirection.y > 0) yDir = -1;
+        else if (enemyDirection.y < 0) yDir = 1;
+
+        this.Thruster(xDir, yDir);
+
+        this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime/1000));
+
+
+        this.position.add(this.velocity);
+
+
+        if (xDir === 0 && yDir === 0) 
+            this.velocity.mult(0.98);
+
+        if (this.velocity.mag() < 0.1)
+            this.velocity.limit(0);
+    }
+
+    Thruster(x, y) {
+        this.moveDirection = createVector(x, y);
+
+        let accel = p5.Vector.mult(this.moveDirection, this.thrustForce / this.mass);
+
+        this.acceleration.add(accel);
+    }
+
+
     Draw() {
         push();
             translate(this.position);
@@ -85,6 +161,18 @@ class Saucer extends GameObject {
             noFill();
             stroke("white");
             strokeWeight(2.5);
+
+            if (this.moveDirection.x > 0)
+                circle(0, 30, 20);
+            else if (this.moveDirection < 0)
+                circle(0, -30, 20);
+            if (this.moveDirection.y > 0)
+                circle(30, 0, 20);
+            else if (this.moveDirection.y < 0)
+                circle(-30, 0, 20);
+
+            circle(0, 0, this.concernRad*2);
+            circle(0, 0, this.chaseRad*2);
             
             beginShape();
                 this.shape.forEach(point => {
@@ -100,7 +188,7 @@ class Saucer extends GameObject {
     RunShotTimer() {
         if (this.timeActive - this.lastTimeShot >= this.timeBetweenShots){
             this.lastTimeShot += this.timeBetweenShots;
-            this.Shoot();
+            //this.Shoot();
         }
     }
 

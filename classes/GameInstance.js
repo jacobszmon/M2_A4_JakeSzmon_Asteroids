@@ -87,10 +87,10 @@ class GameInstance {
         }
 
 
-        if (this.score - this.saucerThresholdAchieved >= 750) {
-            this.saucerThresholdAchieved += 750;
+        if (this.score - this.saucerThresholdAchieved >= 200) {
+            this.saucerThresholdAchieved += 200;
 
-            let bigChance = 0.75;
+            let bigChance = 0.1;
 
             let randAngle = random(0, 360);
             let randy = random(-height/2, height/2);
@@ -99,7 +99,7 @@ class GameInstance {
                 this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_BIG, createVector(0, randy), randAngle);
             }
             else {
-                this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_SML, createVector(0, randy), randAngle);
+                this.gameObjectManager.InstantiateObject(OBJECT_TYPE.SAUCER_SML, createVector(0, randy), 0);
             }
         }
     }
