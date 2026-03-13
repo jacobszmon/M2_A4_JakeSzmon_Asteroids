@@ -60,7 +60,8 @@ class GameObjectManager {
         this.gameObjects.forEach(gameObject => gameObject.Draw());
     }
 
-
+    // ------ COLLISIONS ------
+    // Check collisions compares each gameObject against the other game objects, and alerts them if they're colliding with each other.
     CheckCollisions() {
         let collisionObjects = new Array(...this.gameObjects);
 
@@ -83,9 +84,7 @@ class GameObjectManager {
             }
         });
     }
-
-
-
+    // AreObjectsColliding compares the tags of two objects to find if they can collide, and then checks if they are colliding.
     AreObjectsColliding(object1, object2) {
         let collisionIsValid = true;
 
@@ -113,9 +112,7 @@ class GameObjectManager {
         }
         return false;
     }
-
-
-
+    // Converts two objects into shapes that can be fed to PolyToPoly(), then returns its return value.
     CheckPolyCollisions(object1, object2) {
         let shapeAtPos1 = [];
         
@@ -141,7 +138,7 @@ class GameObjectManager {
         
         return false;
     }
-
+    // Evaluates Polygon to Polygon Collisions.
     PolyToPoly(shape1, shape2) {
         for (let current = 0; current < shape1.length; current++) {
             let next = (current+1 === shape1.length)? 0: current+1;
@@ -158,7 +155,7 @@ class GameObjectManager {
   
         return false
     }
-
+    // Evaluates Line to Polygon Collisions (Used to check edge collisions).
     LineToPoly(shape, line1) {
         for (let current = 0; current < shape.length; current++) {
             let next = (current+1 === shape.length)? 0: current+1;
@@ -175,7 +172,7 @@ class GameObjectManager {
         }
         return false;
     }
-
+    // Evaluates Point to Polygon Collisions (Used to check if an object is inside another object's shape.)
     PointToPoly(point ,shape) {
         let collision = false;
         
@@ -196,7 +193,7 @@ class GameObjectManager {
     
         return collision;
     }
-
+    // Evaluates whether two lines are intersecting.
     LineToLine(line1, line2) {
         let x1 = line1.p1.x;
         let y1 = line1.p1.y;
@@ -223,7 +220,7 @@ class GameObjectManager {
         }
         return false;
     }
-
+    // Used for circle based collisions.
     CircleToCircle(object1, object2) {
         let pos1 = object1.position;
         let pos2 = object2.position;
