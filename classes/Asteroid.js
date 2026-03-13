@@ -49,7 +49,7 @@ class Asteroid extends GameObject {
 
                 let x = radius * cos( i/vertexCount * 360);
                 let y = radius * sin( i/vertexCount * 360);
-                this.shape.push([x, y]);
+                this.shape.push( createVector(x, y) );
             }
         pop();
 
@@ -73,9 +73,9 @@ class Asteroid extends GameObject {
             
             beginShape();
                 this.shape.forEach(point => {
-                    vertex(...point);
+                    vertex(point.x, point.y);
                 });
-                vertex(...this.shape[0]);
+                vertex(this.shape[0].x, this.shape[0].y);
             endShape();
         pop();
     }

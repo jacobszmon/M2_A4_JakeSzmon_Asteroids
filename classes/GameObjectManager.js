@@ -106,6 +106,125 @@ class GameObjectManager {
             return false;
         }
 
+        //return this.CircleToCircle(object1, object2);
+
+        if (this.CheckPolyCollisions(object1, object2)) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+    CheckPolyCollisions(object1, object2) {
+        let shapeAtPos1 = [];
+        
+        
+        object1.shape.forEach(point => {
+            let rotatedPoint = p5.Vector.rotate(point, object1.rotation);
+            shapeAtPos1.push(p5.Vector.add(rotatedPoint, object1.position));
+        });
+        
+        let shapeAtPos2 = [];
+        object2.shape.forEach(point => {
+            let rotatedPoint = p5.Vector.rotate(point, object2.rotation);
+            shapeAtPos2.push(p5.Vector.add(rotatedPoint, object2.position));
+        });
+        
+        if (this.PolyToPoly(shapeAtPos1, shapeAtPos2)) {
+            return true;
+        }
+        
+        if (this.PointToPoly(object1.position, shapeAtPos2) || this.PointToPoly(object2.position, shapeAtPos1)) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    PolyToPoly(shape1, shape2) {
+        for (let current = 0; current < shape1.length; current++) {
+            let next = (current+1 === shape1.length)? 0: current+1;
+            
+            let currLine = {
+                p1: shape1[current],
+                p2: shape1[next]
+            };
+            
+            if (this.LineToPoly(shape2, currLine)) {
+                return true; 
+            }
+        }
+  
+        return false
+    }
+
+    LineToPoly(shape, line1) {
+        for (let current = 0; current < shape.length; current++) {
+            let next = (current+1 === shape.length)? 0: current+1;
+            
+            let currLine = {
+            p1: shape[current],
+            p2: shape[next]
+            };
+            
+            if (this.LineToLine(line1, currLine)) {
+            
+            return true;
+            }
+        }
+        return false;
+    }
+
+    PointToPoly(point ,shape) {
+        let collision = false;
+        
+        for (let current = 0; current < shape.length; current++) {
+        let next = (current+1 === shape.length)? 0: current+1;
+        
+        let currX = shape[current].x;
+        let currY = shape[current].y;
+        let nextX = shape[next].x;
+        let nextY = shape[next].y;
+        
+        if (   ( (currY > point.y) != (nextY > point.y) ) 
+            && (point.x < ((nextX - currX) * (point.y - currY) / (nextY - currY) + currX)) )  
+        {
+            collision = !collision;
+        }
+        }
+    
+        return collision;
+    }
+
+    LineToLine(line1, line2) {
+        let x1 = line1.p1.x;
+        let y1 = line1.p1.y;
+        let x2 = line1.p2.x;
+        let y2 = line1.p2.y;
+        
+        let x3 = line2.p1.x;
+        let y3 = line2.p1.y;
+        let x4 = line2.p2.x;
+        let y4 = line2.p2.y;
+        
+
+        let ux = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+        
+        let uy = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+        
+        
+        if (ux >= 0 && ux <= 1 && uy >= 0 && uy <= 1) {
+            //let x = x1 + (ux * (x2-x1));
+            //let y = y1 + (ux * (y2-y1));
+            //circle(x, y, 20);
+            
+            return true;
+        }
+        return false;
+    }
+
+    CircleToCircle(object1, object2) {
         let pos1 = object1.position;
         let pos2 = object2.position;
 
@@ -116,4 +235,10 @@ class GameObjectManager {
 
         return false;
     }
+
+
+
+
+
+
 }

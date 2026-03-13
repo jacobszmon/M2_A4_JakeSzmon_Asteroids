@@ -23,11 +23,11 @@ class Saucer extends GameObject {
         this.size = size;
 
         this.shape = [
-            [0, -20],
-            [-19, -6],
-            [-12, 16],
-            [12, 16], 
-            [19, -6],
+            createVector(0, -20),
+            createVector(-19, -6),
+            createVector(-12, 16),
+            createVector(12, 16), 
+            createVector(19, -6),
         ];
 
         let scaleBoost = 1;
@@ -35,8 +35,7 @@ class Saucer extends GameObject {
             case OBJECT_TYPE.SAUCER_BIG:
                 scaleBoost = 1.5;
                 this.shape.forEach(point => {
-                    point[0] = point[0] * scaleBoost;
-                    point[1] = point [1] * scaleBoost;
+                    point.mult(scaleBoost);
                 });
                 this.accuracy = 45; 
                 this.pointValue = 200;
@@ -44,8 +43,7 @@ class Saucer extends GameObject {
             case OBJECT_TYPE.SAUCER_SML:
                 scaleBoost = 0.75;
                 this.shape.forEach(point => {
-                    point[0] = point[0] * scaleBoost;
-                    point[1] = point [1] * scaleBoost;
+                    point.mult(scaleBoost);
                 });
                 this.accuracy = 20;
                 this.pointValue = 1000;
@@ -90,9 +88,9 @@ class Saucer extends GameObject {
             
             beginShape();
                 this.shape.forEach(point => {
-                    vertex(...point);
+                    vertex(point.x, point.y);
                 });
-                vertex(...this.shape[0]);
+                vertex(this.shape[0].x, this.shape[0].y);
             endShape();
         pop();
     }
@@ -159,6 +157,7 @@ class Saucer extends GameObject {
 
     DestroySelf() {
         this.manager.gameInstance.UpdateScore(this.pointValue);
+        this.manager.gameInstance.camera.AddCameraTrauma(0.5);
         this.isAlive = false;
     }
 }

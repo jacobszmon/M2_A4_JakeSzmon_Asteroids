@@ -32,10 +32,10 @@ class Player extends GameObject {
 
         // ------ SHAPE ------
         this.shape = [
-            [20, 0],
-            [-20, -15],
-            [-10, 0],
-            [-20, 15],
+            createVector(20, 0),
+            createVector(-20, -15),
+            createVector(-10, 0),
+            createVector(-20, 15),
         ];
 
         this.Start();
@@ -85,9 +85,9 @@ class Player extends GameObject {
                 triangle(-30, 0, -5,  10, -5, -10);
             beginShape();
                 this.shape.forEach(point => {
-                    vertex(...point);
+                    vertex(point.x, point.y);
                 });
-                vertex(...this.shape[0]);
+                vertex(this.shape[0].x, this.shape[0].y);
             endShape();
         pop();
     }

@@ -22,7 +22,7 @@ class Bullet extends GameObject {
 
                 let x = radius * cos( i/this.vertexCount * 360);
                 let y = radius * sin( i/this.vertexCount * 360);
-                this.shape.push([x, y]);
+                this.shape.push(createVector(x, y));
             }
         pop();
 
@@ -46,9 +46,9 @@ class Bullet extends GameObject {
             strokeWeight(2.5);
             beginShape();
                 this.shape.forEach(point => {
-                    vertex(...point);
+                    vertex(point.x, point.y);
                 });
-                vertex(...this.shape[0]);
+                vertex(this.shape[0].x, this.shape[0].y);
             endShape();
         pop();
     }
