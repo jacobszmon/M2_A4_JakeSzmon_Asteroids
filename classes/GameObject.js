@@ -9,6 +9,8 @@ class GameObject {
 
         this.manager = manager;
 
+        this.screenWrapOffset = 50;
+
         this.tag;
     }
 
@@ -20,18 +22,18 @@ class GameObject {
 
     }
 
-    ScreenWrap(offset) {
-        if (this.position.x < (-width/2)-offset){
-            this.position.x = (width/2) + offset;
+    ScreenWrap() {
+        if (this.position.x < (-width/2) - this.screenWrapOffset){
+            this.position.x = (width/2) + this.screenWrapOffset;
         }
-        else if (this.position.x > (width/2) + offset){
-            this.position.x = (-width/2)-offset;
+        else if (this.position.x > (width/2) + this.screenWrapOffset){
+            this.position.x = (-width/2) - this.screenWrapOffset;
         }
-        if (this.position.y < (-height/2)-offset){
-            this.position.y = (height/2) + offset;
+        if (this.position.y < (-height/2) - this.screenWrapOffset){
+            this.position.y = (height/2) + this.screenWrapOffset;
         }
-        else if (this.position.y > (height/2) + offset){
-            this.position.y = (-height/2)-offset;
+        else if (this.position.y > (height/2) + this.screenWrapOffset){
+            this.position.y = (-height/2) - this.screenWrapOffset;
         }
     }
 

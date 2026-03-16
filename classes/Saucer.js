@@ -2,12 +2,13 @@ class Saucer extends GameObject {
     constructor(manager, players, position, rotation, size, velocity = createVector(0, 0)) {
         super(manager, position, rotation, velocity);
 
-        this.maxVelocity = 100;
+        this.staticVelocity = 100;
+        this.maxVelocity = 3;
         this.acceleration = createVector(0, 0);
-        this.mass = 150;
-        this.thrustForce = 750;
+        this.mass = 200;
+        this.thrustForce = 1250;
 
-        this.moveDirection = createVector(0, 1);
+        this.moveDirection = createVector(0, 0);
 
         this.timeActive = 0;
         this.switchFrequency = 2;
@@ -21,8 +22,10 @@ class Saucer extends GameObject {
 
         this.collisionRad = 20;
 
+        this.aimRad = 250;
+        this.chaseRad = 100;
         this.concernRad = 150;
-        this.chaseRad = 50;
+        this.fleeRad = 50;
 
         this.tag = "Saucer";
 
@@ -76,7 +79,7 @@ class Saucer extends GameObject {
         this.Move();
         this.RunShotTimer();
         this.RunActiveTimer();
-        this.ScreenWrap(this.collisionRad);
+        this.ScreenWrap();
     }
 
     MoveDumbly() {
@@ -87,17 +90,17 @@ class Saucer extends GameObject {
             this.moveDirection = createVector(cos(this.rotation + 45), sin(this.rotation + 45));
         }
 
-        this.velocity = p5.Vector.mult(this.moveDirection, this.maxVelocity);
+        this.velocity = p5.Vector.mult(this.moveDirection, this.staticVelocity);
 
         this.position.add(p5.Vector.mult(this.velocity, deltaTime/1000));
     }
 
     MoveSmartly() {
+        // STEP 1 DETERMINE MOVE MODE BASED ON ENEMY POSITIONS
         let enemies = new Array(...this.manager.gameObjects);
         // FILTER 1: FILTER OTHER SAUCERS AND EVIL BULLETS FROM THE ARRAY.
         enemies = enemies.filter(object => object.tag != "Saucer");
         enemies = enemies.filter(object => object.tag != "Evil");
-        
         
         // FILTER 2: If an Enemy is not a concern, don't worry about them.
         enemies = enemies.filter(enemy => {
@@ -105,40 +108,35 @@ class Saucer extends GameObject {
             return (distance < this.concernRad);
         });
 
-        // What Direction should I go? Away from the enemy, obviously!
-        let enemyDirection = createVector(0, 0);
-        enemies.forEach(enemy => {
-            let x = (abs(enemy.position.x - this.position.x) > this.chaseRad)? enemy.position.x: this.position.x;
-            let y = (abs(enemy.position.y - this.position.y) > this.chaseRad)? enemy.position.y: this.position.y;
-
-            let priority = this.concernRad - this.position.dist(enemy.position);
-
-            let dirToEnemy = p5.Vector.sub(createVector(x, y), this.position).limit(1);
-
-            enemyDirection.add(dirToEnemy);
-        });
-        
 
         this.acceleration = createVector(0, 0);
 
-        let xDir = 0;
-        if (enemyDirection.x > 0) xDir = -1;
-        else if (enemyDirection.x < 0) xDir = 1;
+        // CALCULATE ACCELERATION BASED ON MOVE MODE.
+        // If there are any enemies in the concern range, run from them.
+        if (enemies.length != 0)
+            this.AvoidEnemies(enemies);
+        else if (this.manager.players.length > 0) {
+            let playerPos = this.FindClosestPathToPlayer();
+            let playerDist = this.position.dist(playerPos);
 
-        let yDir = 0;
-        if (enemyDirection.y > 0) yDir = -1;
-        else if (enemyDirection.y < 0) yDir = 1;
+            if (playerDist > this.aimRad)
+                this.MoveToPlayer(playerPos);
+            else
+                this.moveDirection = createVector(0, 0);
+        }
+        else
+            this.moveDirection = createVector(0, 0);
 
-        this.Thruster(xDir, yDir);
+        // ACTUALLY MOVE BASE ON ACCELERATION.
 
-        this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime/1000));
+        this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime/1000)).limit(this.maxVelocity);
 
 
         this.position.add(this.velocity);
 
 
-        if (xDir === 0 && yDir === 0) 
-            this.velocity.mult(0.98);
+        //if (this.moveDirection.mag() === 0) 
+        this.velocity.mult(0.98);
 
         if (this.velocity.mag() < 0.1)
             this.velocity.limit(0);
@@ -163,14 +161,16 @@ class Saucer extends GameObject {
             strokeWeight(2.5);
 
             if (this.moveDirection.x > 0)
-                circle(0, 30, 20);
-            else if (this.moveDirection < 0)
-                circle(0, -30, 20);
-            if (this.moveDirection.y > 0)
-                circle(30, 0, 20);
-            else if (this.moveDirection.y < 0)
                 circle(-30, 0, 20);
+            else if (this.moveDirection.x < 0)
+                circle(30, 0, 20);
+            if (this.moveDirection.y > 0)
+                circle(0, -30, 20);
+            else if (this.moveDirection.y < 0)
+                circle(0, 30, 20);
 
+            // RANGE TEST CIRCLES
+            circle(0, 0, this.aimRad*2);
             circle(0, 0, this.concernRad*2);
             circle(0, 0, this.chaseRad*2);
             
@@ -248,4 +248,94 @@ class Saucer extends GameObject {
         this.manager.gameInstance.camera.AddCameraTrauma(0.5);
         this.isAlive = false;
     }
+
+
+
+    // ------ MOVEMENT MODES ------
+
+    // Avoids all collidable objects 
+    AvoidEnemies(enemies) {
+        // What Direction should I go? Away from the enemy, obviously!
+        let enemyDirection = createVector(0, 0);
+        enemies.forEach(enemy => {
+            let x = (abs(enemy.position.x - this.position.x) > this.fleeRad)? enemy.position.x: this.position.x;
+            let y = (abs(enemy.position.y - this.position.y) > this.fleeRad)? enemy.position.y: this.position.y;
+
+            let dirToEnemy = p5.Vector.sub(createVector(x, y), this.position).limit(1);
+
+            enemyDirection.add(dirToEnemy);
+        });
+        
+        let xDir = 0;
+        if (enemyDirection.x > 0) xDir = -1;
+        else if (enemyDirection.x < 0) xDir = 1;
+
+        let yDir = 0;
+        if (enemyDirection.y > 0) yDir = -1;
+        else if (enemyDirection.y < 0) yDir = 1;
+
+        this.Thruster(xDir, yDir);
+    }
+
+    // Moves toward 
+    MoveToPlayer(playerPos) {
+        let dirToPlayer = createVector(0, 0);
+
+        let x = (abs(playerPos.x - this.position.x) > this.chaseRad)? playerPos.x: this.position.x;
+        let y = (abs(playerPos.y - this.position.y) > this.chaseRad)? playerPos.y: this.position.y;
+
+        dirToPlayer = p5.Vector.sub(createVector(x, y), this.position).limit(1);
+
+        let xDir = 0;
+        if (dirToPlayer.x > 0) xDir = 1;
+        else if (dirToPlayer.x < 0) xDir = -1;
+
+        let yDir = 0;
+        if (dirToPlayer.y > 0) yDir = 1;
+        else if (dirToPlayer.y < 0) yDir = -1;
+
+        this.Thruster(xDir, yDir);
+    }
+
+
+
+    FindClosestPathToPlayer() {
+        let playerPos = this.manager.players[0].position.copy();
+
+        // FIND CLOSEST WALLS
+        let nearWallX = width/2 + this.screenWrapOffset;
+        let nearWallY =  height/2 + this.screenWrapOffset;
+        let xFactor = (this.position.x >= 0)? 1 : -1;
+        let yFactor = (this.position.y >= 0)? 1 : -1;
+
+        // DIRECT COORDINATE DISTANCES
+        let directX = this.position.x - playerPos.x;
+        let directY = this.position.y - playerPos.y;
+
+        // INDIRECT COORD DISTANCES (Through Screen Wrap)
+        let indirectX = (nearWallX * xFactor) - this.position.x + playerPos.x - (-1 * xFactor * nearWallX);
+        let indirectY = (nearWallY * yFactor) - this.position.y + playerPos.y - (-1 * yFactor * nearWallY);
+        
+        
+        let closestX = playerPos.x;
+        let closestY = playerPos.y;
+
+        
+        if (Math.abs(indirectX) < Math.abs(directX))
+            closestX = (this.position.x + indirectX);
+        if (Math.abs(indirectY) < Math.abs(directY))
+            closestY = (this.position.y + indirectY);
+
+        push();
+        stroke("white");
+        strokeWeight(10);
+        line(playerPos.x, playerPos.y, this.position.x, this.position.y);
+        line(this.position.x + indirectX, this.position.y, this.position.x, this.position.y);
+        line(this.position.x, this.position.y + indirectY, this.position.x, this.position.y);
+        pop();
+
+
+        return createVector(closestX, closestY);
+    }
+
 }
