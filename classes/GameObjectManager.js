@@ -11,7 +11,7 @@ class GameObjectManager {
         this.gameObjects = [];
     }
 
-    InstantiateObject(type, position, rotation, velocity = createVector(0,0)) {
+    InstantiateObject(type, position, rotation, velocity = createVector(0,0), rate = 0) {
         switch (type) {
             case OBJECT_TYPE.PLAYER:
                 let player = new Player(this, position, rotation)
@@ -31,6 +31,8 @@ class GameObjectManager {
                 this.gameObjects.push( new Saucer(this, this.players, position, rotation, OBJECT_TYPE.SAUCER_BIG)); break;
             case OBJECT_TYPE.SAUCER_SML:
                 this.gameObjects.push( new Saucer(this, this.players, position, rotation, OBJECT_TYPE.SAUCER_SML)); break;
+            case OBJECT_TYPE.PARTICLE_B:
+                this.gameObjects.push( new ParticleSystem(this, position, 0, ParticleSystem.EMITTER_MODE.BURST, rate)); break;
         }
     }
 
@@ -87,6 +89,10 @@ class GameObjectManager {
     // AreObjectsColliding compares the tags of two objects to find if they can collide, and then checks if they are colliding.
     AreObjectsColliding(object1, object2) {
         let collisionIsValid = true;
+
+        if (object1.collisionEnabled === false || object2.collisionEnabled === false){
+            return false;
+        }
 
         switch (object1.tag) {
             case "Player":

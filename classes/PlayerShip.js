@@ -5,6 +5,7 @@ class Player extends GameObject {
         super(manager, position, rotation, velocity);
         // ------ MOVEMENT ------
         this.engineActive = false;
+        this.engineParticles = new ParticleSystem(this, this.position.copy(), 0, ParticleSystem.EMITTER_MODE.CONSTANT, 2, 30);
         this.moveForceMag = 1000;
         this.mass = 250;
         this.acceleration = createVector(0, 0);
@@ -64,6 +65,13 @@ class Player extends GameObject {
         if (this.invincible) {
             this.RunInvincibilityTimer();
         }
+
+
+        let tailPos = p5.Vector.add(this.position, createVector(cos(this.rotation + 180), sin(this.rotation + 180)).mult(15));
+        this.engineParticles.position = tailPos;
+        this.engineParticles.angle = this.rotation + 180;
+        this.engineParticles.running = this.engineActive;
+        this.engineParticles.Update();
     }
 
     Draw() {
@@ -81,8 +89,7 @@ class Player extends GameObject {
             strokeWeight(2.5);
             stroke(fillColor);
         // Draw ship
-            if (this.engineActive)
-                triangle(-30, 0, -5,  10, -5, -10);
+            
             beginShape();
                 this.shape.forEach(point => {
                     vertex(point.x, point.y);
@@ -90,6 +97,8 @@ class Player extends GameObject {
                 vertex(this.shape[0].x, this.shape[0].y);
             endShape();
         pop();
+
+        this.engineParticles.Draw();
     }
 
     // ---------- INPUTS ----------
@@ -221,6 +230,7 @@ class Player extends GameObject {
     }
 
     DestroySelf() {
+        this.manager.InstantiateObject(OBJECT_TYPE.PARTICLE_B, this.position.copy(), 0, createVector(0,0), 30);
         this.position = createVector(0, 0);
         this.velocity = createVector(0, 0);
         this.rotation = -90;

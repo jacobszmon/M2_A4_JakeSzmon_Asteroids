@@ -71,6 +71,7 @@ class MainMenu {
                             textAlign(LEFT);
                             text(this.history[i].score, width/2+10, 200+(40*i));
                         };
+                        
                         break;
                     case MainMenu.MODES.SAVE:
                         textAlign(CENTER);

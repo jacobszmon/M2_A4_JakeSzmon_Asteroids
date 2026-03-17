@@ -10,9 +10,22 @@ class Saucer extends GameObject {
 
         this.moveDirection = createVector(0, 0);
 
+        this.thrusters = {
+            right: new ParticleSystem(this, this.position.copy(), 0, ParticleSystem.EMITTER_MODE.CONSTANT, 2, 30),
+            up: new ParticleSystem(this, this.position.copy(), 0, ParticleSystem.EMITTER_MODE.CONSTANT, 2, 30),
+            left: new ParticleSystem(this, this.position.copy(), 0, ParticleSystem.EMITTER_MODE.CONSTANT, 2, 30),
+            down: new ParticleSystem(this, this.position.copy(), 0, ParticleSystem.EMITTER_MODE.CONSTANT, 2, 30),
+        }
+        this.thrusters.right.angle = 0 + this.rotation;
+        this.thrusters.up.angle = 90 + this.rotation;
+        this.thrusters.left.angle = 180 + this.rotation;
+        this.thrusters.down.angle = 270 + this.rotation;
+        
+        
+
         this.timeActive = 0;
         this.switchFrequency = 2;
-        this.timeBetweenShots = 2;
+        this.timeBetweenShots = 3;
         this.lastTimeShot = 0;
         this.accuracy = 0;
         this.improvementEnabled = false;
@@ -33,34 +46,34 @@ class Saucer extends GameObject {
 
         this.shape = [
             createVector(-10, -20),
+            createVector(0, -15),
             createVector(10, -20),
-            createVector(10, -10),
             createVector(20, -10),
+            createVector(15, 0),
             createVector(20, 10),
-            createVector(10, 10),
             createVector(10, 20),
+            createVector(0, 15),
             createVector(-10, 20),
-            createVector(-10, 10),
             createVector(-20, 10),
+            createVector(-15, 0),
             createVector(-20, -10),
-            createVector(-10, -10),
         ];
 
-        let scaleBoost = 1;
+        this.scaleBoost = 1;
         switch (this.size) {
             case OBJECT_TYPE.SAUCER_BIG:
-                scaleBoost = 1.5;
+                this.scaleBoost = 1.5;
                 this.shape.forEach(point => {
-                    point.mult(scaleBoost);
+                    point.mult(this.scaleBoost);
                 });
                 this.accuracy = 45; 
                 this.pointValue = 200;
                 this.Move = this.MoveDumbly;
                 break;
             case OBJECT_TYPE.SAUCER_SML:
-                scaleBoost = 0.75;
+                this.scaleBoost = 0.75;
                 this.shape.forEach(point => {
-                    point.mult(scaleBoost);
+                    point.mult(this.scaleBoost);
                 });
                 this.accuracy = 20;
                 this.pointValue = 1000;
@@ -80,17 +93,44 @@ class Saucer extends GameObject {
         this.RunShotTimer();
         this.RunActiveTimer();
         this.ScreenWrap();
+
+
+        this.thrusters.left.running = (this.moveDirection.x > 0);
+        this.thrusters.right.running = (this.moveDirection.x < 0);
+        this.thrusters.up.running = (this.moveDirection.y < 0);
+        this.thrusters.down.running = (this.moveDirection.y > 0);
+        for (let i = 0; i < 4; i++) {
+            Object.values(this.thrusters)[i].position = p5.Vector.add(this.position, createVector(cos(this.rotation + (90*i)), sin(this.rotation + (90*i))).mult(20 * this.scaleBoost));
+        }
+        Object.values(this.thrusters).forEach(thruster => thruster.Update());
     }
 
     MoveDumbly() {
-        if (this.timeActive % (this.switchFrequency * 2) <= this.switchFrequency){
-            this.moveDirection = createVector(cos(this.rotation), sin(this.rotation));
+        if (frameCount % (60 * this.switchFrequency) === 1) {
+            let randDir = Math.floor(random(1, 9));
+            switch (randDir) {
+                case 1:
+                    this.moveDirection = createVector(0, 1); break;
+                case 2:
+                    this.moveDirection = createVector(1, 1); break;
+                case 3:
+                    this.moveDirection = createVector(1, 0); break;
+                case 4:
+                    this.moveDirection = createVector(1, -1); break;
+                case 5:
+                    this.moveDirection = createVector(0, -1); break;
+                case 6:
+                    this.moveDirection = createVector(-1, -1); break;
+                case 7:
+                    this.moveDirection = createVector(-1, 0); break;
+                case 8:
+                    this.moveDirection = createVector(-1, 1); break;
+            }
         }
-        else {
-            this.moveDirection = createVector(cos(this.rotation + 45), sin(this.rotation + 45));
-        }
+        angleMode(DEGREES);
+        let worldMoveDir = p5.Vector.rotate(this.moveDirection, this.rotation);
 
-        this.velocity = p5.Vector.mult(this.moveDirection, this.staticVelocity);
+        this.velocity = p5.Vector.mult(worldMoveDir, this.staticVelocity);
 
         this.position.add(p5.Vector.mult(this.velocity, deltaTime/1000));
     }
@@ -136,7 +176,7 @@ class Saucer extends GameObject {
 
 
         //if (this.moveDirection.mag() === 0) 
-        this.velocity.mult(0.98);
+        this.velocity.mult(0.99);
 
         if (this.velocity.mag() < 0.1)
             this.velocity.limit(0);
@@ -160,19 +200,10 @@ class Saucer extends GameObject {
             stroke("white");
             strokeWeight(2.5);
 
-            if (this.moveDirection.x > 0)
-                circle(-30, 0, 20);
-            else if (this.moveDirection.x < 0)
-                circle(30, 0, 20);
-            if (this.moveDirection.y > 0)
-                circle(0, -30, 20);
-            else if (this.moveDirection.y < 0)
-                circle(0, 30, 20);
-
             // RANGE TEST CIRCLES
-            circle(0, 0, this.aimRad*2);
-            circle(0, 0, this.concernRad*2);
-            circle(0, 0, this.chaseRad*2);
+            // circle(0, 0, this.aimRad*2);
+            // circle(0, 0, this.concernRad*2);
+            // circle(0, 0, this.chaseRad*2);
             
             beginShape();
                 this.shape.forEach(point => {
@@ -181,6 +212,8 @@ class Saucer extends GameObject {
                 vertex(this.shape[0].x, this.shape[0].y);
             endShape();
         pop();
+
+        Object.values(this.thrusters).forEach(thruster => thruster.Draw());
     }
 
 
@@ -188,7 +221,7 @@ class Saucer extends GameObject {
     RunShotTimer() {
         if (this.timeActive - this.lastTimeShot >= this.timeBetweenShots){
             this.lastTimeShot += this.timeBetweenShots;
-            //this.Shoot();
+            this.Shoot();
         }
     }
 
@@ -246,6 +279,8 @@ class Saucer extends GameObject {
     DestroySelf() {
         this.manager.gameInstance.UpdateScore(this.pointValue);
         this.manager.gameInstance.camera.AddCameraTrauma(0.5);
+
+        this.manager.InstantiateObject(OBJECT_TYPE.PARTICLE_B, this.position.copy(), 0, createVector(0,0), 30);
         this.isAlive = false;
     }
 
@@ -297,8 +332,7 @@ class Saucer extends GameObject {
         this.Thruster(xDir, yDir);
     }
 
-
-
+    // Finds out whether it would be faster to reach the player using screen wrap or without.
     FindClosestPathToPlayer() {
         let playerPos = this.manager.players[0].position.copy();
 
@@ -329,9 +363,9 @@ class Saucer extends GameObject {
         push();
         stroke("white");
         strokeWeight(10);
-        line(playerPos.x, playerPos.y, this.position.x, this.position.y);
-        line(this.position.x + indirectX, this.position.y, this.position.x, this.position.y);
-        line(this.position.x, this.position.y + indirectY, this.position.x, this.position.y);
+        //line(playerPos.x, playerPos.y, this.position.x, this.position.y);
+        //line(this.position.x + indirectX, this.position.y, this.position.x, this.position.y);
+        //line(this.position.x, this.position.y + indirectY, this.position.x, this.position.y);
         pop();
 
 

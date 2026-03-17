@@ -11,6 +11,8 @@ class GameObject {
 
         this.screenWrapOffset = 50;
 
+        this.collisionEnabled = true;
+
         this.tag;
     }
 

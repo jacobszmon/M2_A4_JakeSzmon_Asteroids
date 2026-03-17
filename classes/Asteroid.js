@@ -113,6 +113,9 @@ class Asteroid extends GameObject {
 
         this.manager.gameInstance.camera.AddCameraTrauma(0.5);
 
+        //(type, position, rotation, velocity = createVector(0,0), rate = 0)
+        this.manager.InstantiateObject(OBJECT_TYPE.PARTICLE_B, this.position.copy(), 0, createVector(0,0), 30);
+
         this.isAlive = false;
     }
 

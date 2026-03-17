@@ -44,6 +44,8 @@ const OBJECT_TYPE = Object.freeze({
   EVIL_BULLET: 5,
   SAUCER_BIG: 6,
   SAUCER_SML: 7,
+  PARTICLE_B : 8,
+  PARTICLE_C : 9
 });
 
 // ------ GLOBAL SKETCH FUNCS ------
