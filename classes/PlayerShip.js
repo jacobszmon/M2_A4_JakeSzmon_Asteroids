@@ -10,6 +10,7 @@ class Player extends GameObject {
         this.mass = 250;
         this.acceleration = createVector(0, 0);
         this.maxVelocity = 5;
+        this.screenWrapOffset = 20;
         // ------ ROTATION ------
         this.rotationDir = 0;
         this.rotationSpeed = 200;

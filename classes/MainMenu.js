@@ -18,25 +18,44 @@ class MainMenu {
         this.visible = true;
 
         this.startGameButton = createButton("Commence Simulation");
-        this.startGameButton.position(width/2 - this.startGameButton.width/2, height/2 + 100);
+        this.startGameButton.addClass('mybutton');
+        this.startGameButton.addClass('startGame');
+        this.startGameButton.position(width/2 - 150, height/2 + 100);
         this.startGameButton.mousePressed(() => this.StartGame());
+        
 
         this.displayLeaderButton = createButton("Analyze Statistics");
-        this.displayLeaderButton.position(width/2 - this.displayLeaderButton.width/2, height/2 + 200);
+        this.displayLeaderButton.addClass('mybutton');
+        this.displayLeaderButton.addClass('leaderboard');
+        this.displayLeaderButton.position(width/2 - 150, height/2 + 200);
         this.displayLeaderButton.mousePressed(() => this.SetMode(MainMenu.MODES.LEADERBOARD));
 
 
         this.returnToMain = createButton("Return");
-        this.returnToMain.position(width/2 - this.returnToMain.width/2, height - 50);
+        this.returnToMain.addClass('mybutton');
+        this.returnToMain.addClass('return');
+        this.returnToMain.position(width/2 - 100, height - 100);
         this.returnToMain.mousePressed(() => this.SetMode(MainMenu.MODES.MENU));
 
 
         this.nameInput = createInput();
         this.submitName = createButton("Submit");
+        this.omitName = createButton("Omit");
 
-        this.nameInput.position(width/2 - (this.nameInput.width + this.submitName.width)/2, height/2 + 100);
-        this.submitName.position(width/2 - (this.nameInput.width + this.submitName.width)/2 + this.nameInput.width, height/2 + 100);
+        this.nameInput.addClass('myinput');
+        this.nameInput.addClass('inputZone');
+
+        this.submitName.addClass('mybutton');
+        this.submitName.addClass('submit');
+
+        this.omitName.addClass('mybutton');
+        this.omitName.addClass('omit');
+
+        this.nameInput.position(width/2 - 200, height/2 + 90);
+        this.submitName.position(width/2 - 110, height/2 + 150);
         this.submitName.mousePressed(() => this.SubmitNewScore());
+        this.omitName.position(width/2 + 10, height/2 + 150);
+        this.omitName.mousePressed(() => this.SetMode(MainMenu.MODES.MENU));
 
 
         
@@ -56,31 +75,35 @@ class MainMenu {
                         textAlign(CENTER);
                         fill("white");
                         textSize(100);
-                        text("Asteroids", width/2, height/2);
+                        text("Asteroids.", width/2, height/2);
                         break;
                     case MainMenu.MODES.LEADERBOARD:
                         textAlign(CENTER);
                         fill("white");
                         textSize(75);
-                        text("Leaderboard", width/2, 100);
+                        text("Leaderboard.", width/2, 100);
 
                         textSize(20);
                         for (let i = 0; i < this.history.length; i++) {
+                            if (i === 0) fill("#FFC107");
+                            else if (i === 1) fill("#9E9E9E");
+                            else if (i === 2) fill("#BF6042");
+                            else fill("white");
                             textAlign(RIGHT);
                             text(this.history[i].name, width/2-10, 200+(40*i));
                             textAlign(LEFT);
                             text(this.history[i].score, width/2+10, 200+(40*i));
                         };
-                        
+
                         break;
                     case MainMenu.MODES.SAVE:
                         textAlign(CENTER);
                         fill("white");
                         textSize(75);
-                        text("Game Over.", width/2, height/2);
+                        text("Simulation Complete.", width/2, height/2);
 
                         textSize(20);
-                        text("Enter Name to Save Score to Leaderboard.", width/2, height/2 + 50);
+                        text("Enter Name and Submit to Save Score to Leaderboard.", width/2, height/2 + 50);
                 }
                 
             }
@@ -113,6 +136,7 @@ class MainMenu {
                 this.returnToMain.hide();
                 this.nameInput.hide();
                 this.submitName.hide();
+                this.omitName.hide();
                 break;
             case MainMenu.MODES.LEADERBOARD:
                 this.startGameButton.hide();
@@ -120,6 +144,7 @@ class MainMenu {
                 this.returnToMain.show();
                 this.nameInput.hide();
                 this.submitName.hide();
+                this.omitName.hide();
                 break;
             case MainMenu.MODES.SAVE:
                 this.startGameButton.hide();
@@ -127,6 +152,7 @@ class MainMenu {
                 this.returnToMain.hide();
                 this.nameInput.show();
                 this.submitName.show();
+                this.omitName.show();
                 break;
             case MainMenu.MODES.INVISIBLE:
                 this.startGameButton.hide();
@@ -134,6 +160,7 @@ class MainMenu {
                 this.returnToMain.hide();
                 this.nameInput.hide();
                 this.submitName.hide();
+                this.omitName.hide();
                 break;
         }
     }

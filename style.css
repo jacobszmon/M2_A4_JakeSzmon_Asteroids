@@ -6,3 +6,58 @@ html, body {
 canvas {
   display: block;
 }
+
+
+.mybutton {
+  background-color: transparent;
+  border-color: white;
+  border-width: 3px;
+  border-radius: 10px;
+  border-style: solid;
+  color: white;
+
+  padding: 5px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.mybutton:hover {
+  border-color: gray;
+  color: gainsboro;
+}
+
+.myinput {
+  background-color: transparent;
+  border-color: white;
+  border-width: 3px;
+  border-radius: 10px;
+  border-style: solid;
+  color: white;
+
+  padding: 5px 15px;
+  font-size: 20px;
+  box-sizing: border-box;
+}
+
+.startGame {
+  width: 300px;
+}
+.leaderboard {
+  width: 300px;
+}
+.submit {
+  width: 100px;
+}
+.omit {
+  width: 100px;
+}
+.return {
+  width: 200px;
+}
+.inputZone {
+  width: 400px;
+}

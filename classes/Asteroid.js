@@ -23,19 +23,22 @@ class Asteroid extends GameObject {
                 noiseScale = 25;
                 
                 this.pointValue = 20; 
-                this.collisionRad = 50; break;
+                this.collisionRad = 50; 
+                this.screenWrapOffset = 55; break;
             case OBJECT_TYPE.ASTEROID_MED:
                 vertexCount = 16;
                 scaleMin = 20;
                 noiseScale = 20;
                 this.pointValue = 50;
-                this.collisionRad = 25; break;
+                this.collisionRad = 25; 
+                this.screenWrapOffset = 30; break;
             case OBJECT_TYPE.ASTEROID_SML:
                 vertexCount = 8;
                 scaleMin = 10;
                 noiseScale = 15;
                 this.pointValue = 100;
-                this.collisionRad = 12; break;
+                this.collisionRad = 12; 
+                this.screenWrapOffset = 17;break;
         }
 
         push();

@@ -50,7 +50,7 @@ const OBJECT_TYPE = Object.freeze({
 
 // ------ GLOBAL SKETCH FUNCS ------
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(1000, 800);
   
   mainMenu = new MainMenu();
   //gameInstance = new GameInstance();

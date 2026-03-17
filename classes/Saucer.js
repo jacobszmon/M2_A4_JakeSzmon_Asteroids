@@ -69,6 +69,7 @@ class Saucer extends GameObject {
                 this.accuracy = 45; 
                 this.pointValue = 200;
                 this.Move = this.MoveDumbly;
+                this.screenWrapOffset = 40;
                 break;
             case OBJECT_TYPE.SAUCER_SML:
                 this.scaleBoost = 0.75;
@@ -82,6 +83,7 @@ class Saucer extends GameObject {
                     this.movementTracking = true;
                 };
                 this.Move = this.MoveSmartly;
+                this.screenWrapOffset = 20;
                 break;
         }
 

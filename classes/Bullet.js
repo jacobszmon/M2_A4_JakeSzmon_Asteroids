@@ -11,6 +11,8 @@ class Bullet extends GameObject {
 
         this.collisionRad = 5;
 
+        this.screenWrapOffset = 7;
+
         this.shape = [
         ];
         this.vertexCount = 8;
