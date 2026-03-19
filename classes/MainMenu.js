@@ -108,7 +108,7 @@ class MainMenu {
 
     GetHistory() {
         // Get Leaderboard from local storage. If there is no leaderboard, create a new empty one.
-        if (localStorage.getItem("History") != "") {
+        if (localStorage.getItem("History") != "" && localStorage.getItem("History") != null) {
             this.history = JSON.parse(localStorage.getItem("History"));
 
             this.history.sort((a, b) => b.score - a.score);
