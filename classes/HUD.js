@@ -1,5 +1,5 @@
 class HUD {
-    
+
     constructor(gameInstance) {
         // Where we get our values from
         this.gameInstance = gameInstance;
@@ -10,7 +10,7 @@ class HUD {
         // SCORE DISPLAY VALUES
         this.scorePrefix = "Score: ";
         this.scoreColor = "white";
-        this.scoreSize = 20;
+        this.scoreSize = 25;
 
         
         // LIFE DISPLAY VALUES
@@ -36,6 +36,7 @@ class HUD {
             // SCORE
             fill(this.scoreColor);
             textSize(this.scoreSize);
+            textFont(bodyFont);
             let scoreText = this.scorePrefix + this.gameInstance.score;
             text(scoreText, this.margins, this.margins);
 

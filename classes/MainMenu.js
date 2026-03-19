@@ -19,21 +19,21 @@ class MainMenu {
 
         // HTML ELEMENTS
         // COMMENCE SIMULATION (Start Game)
-        this.startGameButton = createButton("Commence Simulation");
+        this.startGameButton = createButton("Commence Simulation.");
         this.startGameButton.addClass('mybutton');
         this.startGameButton.addClass('startGame');
         this.startGameButton.position(width/2 - 150, height/2 + 100);
         this.startGameButton.mousePressed(() => this.StartGame());
         
         // ANALYZE STATISTICS (Show Leaderboard)
-        this.displayLeaderButton = createButton("Analyze Statistics");
+        this.displayLeaderButton = createButton("Analyze Statistics.");
         this.displayLeaderButton.addClass('mybutton');
         this.displayLeaderButton.addClass('leaderboard');
         this.displayLeaderButton.position(width/2 - 150, height/2 + 200);
         this.displayLeaderButton.mousePressed(() => this.SetMode(MainMenu.MODES.LEADERBOARD));
 
         // RETURN (to Main Menu)
-        this.returnToMain = createButton("Return");
+        this.returnToMain = createButton("Return.");
         this.returnToMain.addClass('mybutton');
         this.returnToMain.addClass('return');
         this.returnToMain.position(width/2 - 100, height - 100);
@@ -46,14 +46,14 @@ class MainMenu {
         this.nameInput.position(width/2 - 200, height/2 + 90);
 
         // SUBMIT (Submit Name + Score)
-        this.submitName = createButton("Submit");
+        this.submitName = createButton("Submit.");
         this.submitName.addClass('mybutton');
         this.submitName.addClass('submit');
         this.submitName.position(width/2 - 110, height/2 + 150);
         this.submitName.mousePressed(() => this.SubmitNewScore());
 
         // OMIT (Do not submit Name + Score)
-        this.omitName = createButton("Omit");
+        this.omitName = createButton("Omit.");
         this.omitName.addClass('mybutton');
         this.omitName.addClass('omit');
         this.omitName.position(width/2 + 10, height/2 + 150);
@@ -178,6 +178,7 @@ class MainMenu {
         textAlign(CENTER);
         fill("white");
         textSize(100);
+        textFont(titleFont);
         text("Asteroids.", width/2, height/2);
     }
     
@@ -185,28 +186,66 @@ class MainMenu {
         textAlign(CENTER);
         fill("white");
         textSize(75);
-        text("Leaderboard.", width/2, 100);
+        push();
+            textFont(titleFont);
+            text("leadeRboaRd.", width/2, 100);
+        pop();
 
-        textSize(20);
+
+        push();
+            textFont(bodyFont);
+            textSize(22);
+
+            let nameWidth = this.GetLongestNameWidth();
+            let placeWidth = textWidth("12.   ");
+            let scoreWidth = textWidth("888888");
+            let displayWidth = nameWidth + placeWidth + scoreWidth;
+            print(displayWidth);
+
+            for (let i = 0; i < Math.min(this.history.length, 12); i++) {
+                if (i === 0) fill("#FFC107");
+                else if (i === 1) fill("#9E9E9E");
+                else if (i === 2) fill("#BF6042");
+                else fill("white");
+                
+                    textAlign(LEFT);
+                    text(i+1+".", width/2-((displayWidth)/2), 170+(45*i));
+                    text(this.history[i].name, width/2-((displayWidth)/2)+placeWidth, 170+(45*i));
+                    textAlign(RIGHT);
+                    text(this.history[i].score, width/2+((displayWidth)/2), 170+(45*i));
+
+                    
+                
+            };
+        pop();
+    }
+
+
+    GetLongestNameWidth() {
+        let width = 0;
+
         for (let i = 0; i < Math.min(this.history.length, 12); i++) {
-            if (i === 0) fill("#FFC107");
-            else if (i === 1) fill("#9E9E9E");
-            else if (i === 2) fill("#BF6042");
-            else fill("white");
-            textAlign(RIGHT);
-            text(this.history[i].name, width/2-10, 200+(40*i));
-            textAlign(LEFT);
-            text(this.history[i].score, width/2+10, 200+(40*i));
-        };
+            width = Math.max(textWidth(this.history[i].name), width);
+        }
+        return width;
     }
 
     DrawGameOver() {
         textAlign(CENTER);
         fill("white");
-        textSize(75);
-        text("Simulation Complete.", width/2, height/2);
+        textSize(85);
+        push();
+            textFont(titleFont);
+            text("siMulAtion", width/2, height/2 - 110);
+            text("coMplete.", width/2, height/2 - 10);
+        pop();
+        
 
         textSize(20);
-        text("Enter Name and Submit to Save Score to Leaderboard.", width/2, height/2 + 50);
+        push();
+            textFont(bodyFont);
+            text("Enter Name and Submit to Save Score to Leaderboard.", width/2, height/2 + 50);
+        pop();
+        
     }
 }

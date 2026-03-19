@@ -8,8 +8,13 @@ canvas {
 }
 
 
+@font-face {
+  font-family: myFont;
+  src: url(fonts/ChakraPetch-SemiBold.ttf);
+}
+
 .mybutton {
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.75);
   border-color: white;
   border-width: 3px;
   border-radius: 10px;
@@ -21,6 +26,7 @@ canvas {
   text-decoration: none;
   display: inline-block;
   font-size: 20px;
+  font-family: myFont;
   cursor: pointer;
   box-sizing: border-box;
 }
@@ -31,7 +37,7 @@ canvas {
 }
 
 .myinput {
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.75);
   border-color: white;
   border-width: 3px;
   border-radius: 10px;
@@ -40,6 +46,7 @@ canvas {
 
   padding: 5px 15px;
   font-size: 20px;
+  font-family: myFont;
   box-sizing: border-box;
 }
 

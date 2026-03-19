@@ -3,7 +3,7 @@
 // Program Description: My Recreation of the classic game Asteroids, made using javascript with the p5.js library.
 
 
-// ------ SOUNDS ------
+// ------ SOUNDS & FONTS ------
 let deathSound;
 let laserSound;
 let thrusterSound;
@@ -11,7 +11,11 @@ let teleportSound;
 let alarmSound;
 let gameMusic;
 
+let titleFont;
+let bodyFont;
+
 function preload() {
+  // SOUNDS
   deathSound = loadSound("sounds/SpaceExplosion.wav");
   laserSound = loadSound("sounds/Laser1.wav");
   alarmSound = loadSound("sounds/SaucerAlarm.wav");
@@ -20,6 +24,10 @@ function preload() {
   teleportSound = loadSound("sounds/Teleport.wav");
 
   gameMusic = loadSound("sounds/MainGameMusic.mp3");
+
+  // FONTS
+  titleFont = loadFont('fonts/MajorMonoDisplay-Regular.ttf');
+  bodyFont = loadFont('fonts/ChakraPetch-SemiBold.ttf');
 }
 // Start audio context and music on mouse click.
 function mouseClicked() {
