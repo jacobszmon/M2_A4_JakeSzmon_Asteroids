@@ -1,14 +1,17 @@
 class Saucer extends GameObject {
+
     constructor(manager, players, position, rotation, size, velocity = createVector(0, 0)) {
         super(manager, position, rotation, velocity);
 
+        // Movement
+        this.moveDirection = createVector(0, 0);
+        // -- Move Dumbly
         this.staticVelocity = 100;
+        // -- Move Smartly
         this.maxVelocity = 3;
         this.acceleration = createVector(0, 0);
         this.mass = 200;
         this.thrustForce = 1250;
-
-        this.moveDirection = createVector(0, 0);
 
         this.thrusters = {
             right: new ParticleSystem(this, this.position.copy(), 0, ParticleSystem.EMITTER_MODE.CONSTANT, 2, 30),
@@ -20,30 +23,32 @@ class Saucer extends GameObject {
         this.thrusters.up.angle = 90 + this.rotation;
         this.thrusters.left.angle = 180 + this.rotation;
         this.thrusters.down.angle = 270 + this.rotation;
-        
-        
 
+        // -- Behavior Radii
+        this.aimRad = 250;
+        this.chaseRad = 100;
+        this.concernRad = 150;
+        this.fleeRad = 50;
+        
+        // Timed Behaviors
         this.timeActive = 0;
-        this.switchFrequency = 2;
-        this.timeBetweenShots = 3;
+        this.switchFrequency = 2; // How often to change direction (Move Dumbly)
+        // -- Shooting
+        this.timeBetweenShots = 3; // How often to Shoot.
         this.lastTimeShot = 0;
         this.accuracy = 0;
         this.improvementEnabled = false;
         this.movementTracking = false;
 
+        // Misc
         this.pointValue = 200;
-
         this.collisionRad = 20;
-
-        this.aimRad = 250;
-        this.chaseRad = 100;
-        this.concernRad = 150;
-        this.fleeRad = 50;
-
         this.tag = "Saucer";
-
         this.size = size;
+        this.scaleBoost = 1; // Multiplies shape depending on size.
+        this.players = players;
 
+        // -- Collision + Draw Shape.
         this.shape = [
             createVector(-10, -20),
             createVector(0, -15),
@@ -59,9 +64,9 @@ class Saucer extends GameObject {
             createVector(-20, -10),
         ];
 
-        this.scaleBoost = 1;
+        // CHANGE VISUALS AND BEHAVIORS ACCORDING TO SIZE
         switch (this.size) {
-            case OBJECT_TYPE.SAUCER_BIG:
+            case OBJECT_TYPE.SAUCER_BIG: // BIG: Quite Large, Moves Dumbly, Aims Poorly. 
                 this.scaleBoost = 1.5;
                 this.shape.forEach(point => {
                     point.mult(this.scaleBoost);
@@ -69,9 +74,11 @@ class Saucer extends GameObject {
                 this.accuracy = 45; 
                 this.pointValue = 200;
                 this.Move = this.MoveDumbly;
-                this.screenWrapOffset = 40;
+                this.screenWrapOffset = 40; // Overrides the value set in the base GameObject
                 break;
-            case OBJECT_TYPE.SAUCER_SML:
+
+
+            case OBJECT_TYPE.SAUCER_SML: // SMALL: Tiny, Moves Smartly, Aim improves as the player's score increases.
                 this.scaleBoost = 0.75;
                 this.shape.forEach(point => {
                     point.mult(this.scaleBoost);
@@ -83,16 +90,19 @@ class Saucer extends GameObject {
                     this.movementTracking = true;
                 };
                 this.Move = this.MoveSmartly;
-                this.screenWrapOffset = 20;
+                this.screenWrapOffset = 20; // Overrides the value set in the base GameObject
                 break;
         }
 
-        this.players = players;
+        
     }
+
+
+
 
     Update() {
         this.Move();
-        this.RunShotTimer();
+        this.TimeToShoot();
         this.RunActiveTimer();
         this.ScreenWrap();
 
@@ -107,6 +117,112 @@ class Saucer extends GameObject {
         Object.values(this.thrusters).forEach(thruster => thruster.Update());
     }
 
+    Draw() {
+        push();
+            translate(this.position);
+            rotate(this.rotation);
+
+            noFill();
+            stroke("white");
+            strokeWeight(2.5);
+
+            // RANGE TEST CIRCLES
+            // circle(0, 0, this.aimRad*2);
+            // circle(0, 0, this.concernRad*2);
+            // circle(0, 0, this.chaseRad*2);
+            
+            beginShape();
+                this.shape.forEach(point => {
+                    vertex(point.x, point.y);
+                });
+                vertex(this.shape[0].x, this.shape[0].y);
+            endShape();
+        pop();
+
+        Object.values(this.thrusters).forEach(thruster => thruster.Draw());
+    }
+
+    
+    // ------ SHOOTING ------
+    Shoot() {
+        let shotDir = this.AimAtAPlayer();
+
+        let bulletOrigin = this.position.copy();
+
+        this.manager.InstantiateObject(OBJECT_TYPE.EVIL_BULLET, bulletOrigin, 0, shotDir);
+
+        // Play the laser sound at a random pitch and volume (for variation)
+        let randPitch = random(0.8, 1.2);
+        laserSound.playbackRate = randPitch;
+        let randVolume = random(0.5, 0.7);
+        laserSound.setVolume(randVolume);
+
+        laserSound.play();
+    }
+    AimAtAPlayer() {
+
+        // Set Accuracy Level:
+        let  finAccuracy = this.accuracy;
+        // If the saucer can improve their aim, minimize the accuracy range with score, reaching 0 (perfect accuracy) at 10000 points.
+        if (this.improvementEnabled) {
+            finAccuracy = this.accuracy - (this.accuracy * this.manager.gameInstance.score / 10000);
+        } 
+
+
+        // Pick a random target from the list of players.
+        let target = random(this.players)
+
+        // Get their position.
+        let playerPos = target.position;
+        // FOR TESTING
+        // console.log(playerPos);
+
+        // If movement tracking is enabled, aim for where the player is going, not where they are.
+        if (this.movementTracking) {
+            playerPos = p5.Vector.add(playerPos, target.velocity);
+        }
+        // FOR TESTING
+        // console.log(playerPos);
+
+
+        // Get the angle from the saucer to the target
+        let aimDir = p5.Vector.sub(playerPos, this.position);
+        let shotAngle = atan2(aimDir.y, aimDir.x);
+
+        
+        // deviate the shot angle by the saucer's accuracy.
+        shotAngle += random(-finAccuracy, finAccuracy);
+
+        // create a unit vector for that angle, which we can give to the bullet that will spawn.
+        let shotDir = createVector(cos(shotAngle), sin(shotAngle));
+        return shotDir;
+    }
+    TimeToShoot() {
+        if (this.timeActive - this.lastTimeShot >= this.timeBetweenShots){
+            this.lastTimeShot += this.timeBetweenShots;
+            this.Shoot();
+        }
+    }
+
+    
+    // ------ MISC ------
+    RunActiveTimer() {
+        this.timeActive += deltaTime/1000;
+    }
+    DestroySelf() {
+        this.manager.gameInstance.UpdateScore(this.pointValue);
+        this.manager.gameInstance.camera.AddCameraTrauma(0.5);
+
+        this.manager.InstantiateObject(OBJECT_TYPE.PARTICLE_B, this.position.copy(), 0, createVector(0,0), 30);
+        this.isAlive = false;
+    }
+
+
+
+    
+
+    // ------ MOVEMENT  ------
+    // (LINEAR MOVEMENT) Moves in a random direction for 2 seconds, switching directions afterwards.
     MoveDumbly() {
         if (frameCount % (60 * this.switchFrequency) === 1) {
             let randDir = Math.floor(random(1, 9));
@@ -137,6 +253,7 @@ class Saucer extends GameObject {
         this.position.add(p5.Vector.mult(this.velocity, deltaTime/1000));
     }
 
+    // (PHYSICS) Tries to stay in range of the player, while avoiding collisions.
     MoveSmartly() {
         // STEP 1 DETERMINE MOVE MODE BASED ON ENEMY POSITIONS
         let enemies = new Array(...this.manager.gameObjects);
@@ -184,112 +301,6 @@ class Saucer extends GameObject {
             this.velocity.limit(0);
     }
 
-    Thruster(x, y) {
-        this.moveDirection = createVector(x, y);
-
-        let accel = p5.Vector.mult(this.moveDirection, this.thrustForce / this.mass);
-
-        this.acceleration.add(accel);
-    }
-
-
-    Draw() {
-        push();
-            translate(this.position);
-            rotate(this.rotation);
-
-            noFill();
-            stroke("white");
-            strokeWeight(2.5);
-
-            // RANGE TEST CIRCLES
-            // circle(0, 0, this.aimRad*2);
-            // circle(0, 0, this.concernRad*2);
-            // circle(0, 0, this.chaseRad*2);
-            
-            beginShape();
-                this.shape.forEach(point => {
-                    vertex(point.x, point.y);
-                });
-                vertex(this.shape[0].x, this.shape[0].y);
-            endShape();
-        pop();
-
-        Object.values(this.thrusters).forEach(thruster => thruster.Draw());
-    }
-
-
-
-    RunShotTimer() {
-        if (this.timeActive - this.lastTimeShot >= this.timeBetweenShots){
-            this.lastTimeShot += this.timeBetweenShots;
-            this.Shoot();
-        }
-    }
-
-    Shoot() {
-        let shotDir = this.AimAtAPlayer();
-
-        let bulletOrigin = this.position.copy();
-
-        this.manager.InstantiateObject(OBJECT_TYPE.EVIL_BULLET, bulletOrigin, 0, shotDir);
-    }
-
-    AimAtAPlayer() {
-
-        // Set Accuracy Level:
-        let  finAccuracy = this.accuracy;
-        // If the saucer can improve their aim, minimize the accuracy range with score, reaching 0 (perfect accuracy) at 10000 points.
-        if (this.improvementEnabled) {
-            finAccuracy = this.accuracy - (this.accuracy * this.manager.gameInstance.score / 10000);
-        } 
-
-
-        // Pick a random target from the list of players.
-        let target = random(this.players)
-
-        // Get their position.
-        let playerPos = target.position;
-        // FOR TESTING
-        // console.log(playerPos);
-
-        // If movement tracking is enabled, aim for where the player is going, not where they are.
-        if (this.movementTracking) {
-            playerPos = p5.Vector.add(playerPos, target.velocity);
-        }
-        // FOR TESTING
-        // console.log(playerPos);
-
-
-        // Get the angle from the saucer to the target
-        let aimDir = p5.Vector.sub(playerPos, this.position);
-        let shotAngle = atan2(aimDir.y, aimDir.x);
-
-        
-        // deviate the shot angle by the saucer's accuracy.
-        shotAngle += random(-finAccuracy, finAccuracy);
-
-        // create a unit vector for that angle, which we can give to the bullet that will spawn.
-        let shotDir = createVector(cos(shotAngle), sin(shotAngle));
-        return shotDir;
-    }
-
-    RunActiveTimer() {
-        this.timeActive += deltaTime/1000;
-    }
-
-    DestroySelf() {
-        this.manager.gameInstance.UpdateScore(this.pointValue);
-        this.manager.gameInstance.camera.AddCameraTrauma(0.5);
-
-        this.manager.InstantiateObject(OBJECT_TYPE.PARTICLE_B, this.position.copy(), 0, createVector(0,0), 30);
-        this.isAlive = false;
-    }
-
-
-
-    // ------ MOVEMENT MODES ------
-
     // Avoids all collidable objects 
     AvoidEnemies(enemies) {
         // What Direction should I go? Away from the enemy, obviously!
@@ -314,7 +325,7 @@ class Saucer extends GameObject {
         this.Thruster(xDir, yDir);
     }
 
-    // Moves toward 
+    // Moves toward player when they're too far away. Follows through screen wrap if it's closer.
     MoveToPlayer(playerPos) {
         let dirToPlayer = createVector(0, 0);
 
@@ -374,4 +385,12 @@ class Saucer extends GameObject {
         return createVector(closestX, closestY);
     }
 
+    // While moving smartly, is used to apply thruster forces.
+    Thruster(x, y) {
+        this.moveDirection = createVector(x, y);
+
+        let accel = p5.Vector.mult(this.moveDirection, this.thrustForce / this.mass);
+
+        this.acceleration.add(accel);
+    }
 }

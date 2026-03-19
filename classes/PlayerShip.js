@@ -1,6 +1,5 @@
-
-
 class Player extends GameObject {
+
     constructor(manager, position, rotation, velocity = createVector(0, 0)) {
         super(manager, position, rotation, velocity);
         // ------ MOVEMENT ------
@@ -10,7 +9,7 @@ class Player extends GameObject {
         this.mass = 250;
         this.acceleration = createVector(0, 0);
         this.maxVelocity = 5;
-        this.screenWrapOffset = 20;
+        this.screenWrapOffset = 20; // Overrides the value set in the base GameObject
         // ------ ROTATION ------
         this.rotationDir = 0;
         this.rotationSpeed = 200;
@@ -67,7 +66,7 @@ class Player extends GameObject {
             this.RunInvincibilityTimer();
         }
 
-
+        // THRUSTER PARTICLE EFFECTS
         let tailPos = p5.Vector.add(this.position, createVector(cos(this.rotation + 180), sin(this.rotation + 180)).mult(15));
         this.engineParticles.position = tailPos;
         this.engineParticles.angle = this.rotation + 180;
@@ -98,9 +97,11 @@ class Player extends GameObject {
                 vertex(this.shape[0].x, this.shape[0].y);
             endShape();
         pop();
-
+        
+        // Draw Thruster Particles
         this.engineParticles.Draw();
     }
+
 
     // ---------- INPUTS ----------
     ParseInputs() {
@@ -143,30 +144,8 @@ class Player extends GameObject {
     }
 
 
-
     // ---------- ACTIONS ----------
-    BlastOff() {
-        if (this.engineActive) {
-            let force = createVector(cos(this.rotation), sin(this.rotation)).mult(this.moveForceMag);
-            this.ApplyForce(force);
-        }
-    }
-
-    ResetAcceleration() {
-        this.acceleration = createVector(0,0);
-    }
-
-    ApplyForce(force, isImpulse = false) {
-        let accel = p5.Vector.div(force, this.mass);
-        if (isImpulse) {
-            this.velocity.add(accel);
-        }
-        else {
-            this.acceleration.add(accel);
-        }
-        
-    }
-
+    // Move the ship according to it's current acceleration.
     Move() {
         push();
             
@@ -192,7 +171,7 @@ class Player extends GameObject {
             this.ScreenWrap(20);
         pop();
     }
-
+    // Rotate the ship according to the current rotation direction
     Rotate() {
         push();
         // Get angular velocity.
@@ -201,14 +180,14 @@ class Player extends GameObject {
             this.rotation += this.angularVelocity * deltaTime/1000;
         pop();
     }
-
+    // Teleport to a random location 
     Teleport() {
         let randX = random(-width/2, width/2);
         let randY = random(-height/2, height/2);
         this.position = createVector(randX, randY);
         teleportSound.play();
     }
-
+    // Fires a bullet in the direction the player is facing.
     Shoot() {
         // Get Bullet Direction and origin.
         let bulletDirection = createVector(cos(this.rotation), sin(this.rotation));
@@ -225,11 +204,37 @@ class Player extends GameObject {
         // Make Bullet.
         this.manager.InstantiateObject(OBJECT_TYPE.BULLET, bulletOrigin, 0, bulletDirection);
 
+        // Apply Recoil
         let recoilForce = p5.Vector.mult(bulletDirection, -this.recoilMag);
-        
         this.ApplyForce(recoilForce, true);
     }
 
+
+    // ------ PHYSICS METHODS ------
+    BlastOff() {
+        if (this.engineActive) {
+            let force = createVector(cos(this.rotation), sin(this.rotation)).mult(this.moveForceMag);
+            this.ApplyForce(force);
+        }
+    }
+
+    ResetAcceleration() {
+        this.acceleration = createVector(0,0);
+    }
+
+    ApplyForce(force, isImpulse = false) {
+        let accel = p5.Vector.div(force, this.mass);
+        if (isImpulse) {
+            this.velocity.add(accel);
+        }
+        else {
+            this.acceleration.add(accel);
+        }
+        
+    }
+
+    
+    // ------ MISC ------
     DestroySelf() {
         this.manager.InstantiateObject(OBJECT_TYPE.PARTICLE_B, this.position.copy(), 0, createVector(0,0), 30);
         this.position = createVector(0, 0);
@@ -241,7 +246,6 @@ class Player extends GameObject {
         this.manager.gameInstance.camera.AddCameraTrauma(0.7);
         this.manager.gameInstance.PlayerDied();
     }
-
     RunInvincibilityTimer() {
         this.iElapsed += deltaTime/1000;
 
@@ -250,7 +254,6 @@ class Player extends GameObject {
             this.iElapsed = 0;
         }
     }
-
     ThrusterVolume() {
         if (this.engineActive){
             if (this.thrusterVolume < 0.3){

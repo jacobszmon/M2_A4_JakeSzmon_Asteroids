@@ -11,7 +11,31 @@ class GameObjectManager {
         this.gameObjects = [];
     }
 
+    UpdateObjects() { 
+        this.gameObjects.forEach(gameObject => gameObject.Update());
+    }
+
+    DrawObjects() {
+        this.gameObjects.forEach(gameObject => gameObject.Draw());
+    }
+
+
+    // ------ GAME FUNCTIONALITY ------
+    // Check if the current level is finished. (The current level is finished when the player is the only Game Object around.)
+    CheckIfLevelFinished() {
+        if (this.gameInstance.gameIsOver){
+            return;
+        }
+        if (this.gameObjects.length <= 1) {
+            this.gameInstance.LevelUp();
+        }
+    }
+
+    
+    // ------ OBJECT CREATION AND DESTRUCTION ------
+    // Add a new Game Object to the game!
     InstantiateObject(type, position, rotation, velocity = createVector(0,0), rate = 0) {
+        // Depending on the type of object given, switch what kind of object to instantiate.
         switch (type) {
             case OBJECT_TYPE.PLAYER:
                 let player = new Player(this, position, rotation)
@@ -35,33 +59,17 @@ class GameObjectManager {
                 this.gameObjects.push( new ParticleSystem(this, position, 0, ParticleSystem.EMITTER_MODE.BURST, rate)); break;
         }
     }
-
+    // Filter our array of active game objects, removing ones that are dead/destroyed.
     ClearDestroyedObjects() {
         this.players = this.players.filter(player => player.isAlive);
         this.gameObjects = this.gameObjects.filter(gameObject => gameObject.isAlive);
     } 
-
+    // Clears all game objects when called.
     ClearAllObjects() {
         this.gameObjects = [];
     }
 
-    CheckIfLevelFinished() {
-        if (this.gameInstance.gameIsOver){
-            return;
-        }
-        if (this.gameObjects.length <= 1) {
-            this.gameInstance.LevelUp();
-        }
-    }
-
-    UpdateObjects() { 
-        this.gameObjects.forEach(gameObject => gameObject.Update());
-    }
-
-    DrawObjects() {
-        this.gameObjects.forEach(gameObject => gameObject.Draw());
-    }
-
+    
     // ------ COLLISIONS ------
     // Check collisions compares each gameObject against the other game objects, and alerts them if they're colliding with each other.
     CheckCollisions() {

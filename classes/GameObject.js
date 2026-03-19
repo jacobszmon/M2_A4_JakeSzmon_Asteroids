@@ -1,18 +1,22 @@
 class GameObject {
 
     constructor(manager, position, rotation, velocity) {
-
+        // Object Transform
         this.position = position;
         this.rotation = rotation;
+
+        // Object Velocity
         this.velocity = velocity;
+
+        // Am I Dead?
         this.isAlive = true;
 
+        // Who is managing me?
         this.manager = manager;
 
+        // Collision & Screen Wrap
         this.screenWrapOffset = 50;
-
         this.collisionEnabled = true;
-
         this.tag;
     }
 
@@ -23,7 +27,8 @@ class GameObject {
     Draw() {
 
     }
-
+    
+    // Base Object Functions
     ScreenWrap() {
         if (this.position.x < (-width/2) - this.screenWrapOffset){
             this.position.x = (width/2) + this.screenWrapOffset;
@@ -40,7 +45,6 @@ class GameObject {
     }
 
     CollisionDetected() {
-        // console.log("collision detected");
         this.DestroySelf();
     }
 

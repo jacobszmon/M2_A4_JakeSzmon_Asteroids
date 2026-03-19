@@ -2,17 +2,16 @@ class Bullet extends GameObject {
     constructor (manager, position, direction, speed, tag) {
         super(manager, position, 0, createVector(0, 0));
 
+        // Bullet Settings
         this.lifespan = 1.5;
         this.timeSinceBirth = 0;
-
         this.bulletSpeed = speed;
-
         this.velocity = p5.Vector.mult(direction ,this.bulletSpeed);
+        this.screenWrapOffset = 7; // Overrides the value set in the base GameObject
 
+        // Collision
         this.collisionRad = 5;
-
-        this.screenWrapOffset = 7;
-
+        this.tag = tag;
         this.shape = [
         ];
         this.vertexCount = 8;
@@ -27,9 +26,6 @@ class Bullet extends GameObject {
                 this.shape.push(createVector(x, y));
             }
         pop();
-
-
-        this.tag = tag;
     }
 
     Update() {
@@ -55,6 +51,7 @@ class Bullet extends GameObject {
         pop();
     }
 
+    // ------ MISC METHODS ------
     Move() {
         push();
             this.position.add(this.velocity);

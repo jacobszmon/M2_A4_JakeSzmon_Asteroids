@@ -1,46 +1,52 @@
 class Asteroid extends GameObject {
+
     constructor(manager, position, rotation, velocity, size) {
         super(manager, position, rotation, velocity);
 
+        // Misc
         this.collisionRad;
         this.tag = "Asteroid";
-
         this.size = size;
-
         this.pointValue;
 
-        this.shape = [
-        ];
         
-
+        // GENERATE A RANDOM METEOR SHAPE
         let vertexCount = 20;
         let noiseScale = 5;
-        let scaleMin = 1;
+        let scaleMin = 1; 
         switch(this.size){
             case OBJECT_TYPE.ASTEROID_BIG:
                 vertexCount = 25;
                 scaleMin= 40;
                 noiseScale = 25;
-                
                 this.pointValue = 20; 
                 this.collisionRad = 50; 
-                this.screenWrapOffset = 55; break;
+                this.screenWrapOffset = 55;
+                break;
+
+
             case OBJECT_TYPE.ASTEROID_MED:
                 vertexCount = 16;
                 scaleMin = 20;
                 noiseScale = 20;
                 this.pointValue = 50;
                 this.collisionRad = 25; 
-                this.screenWrapOffset = 30; break;
+                this.screenWrapOffset = 30;
+                break;
+
+
             case OBJECT_TYPE.ASTEROID_SML:
                 vertexCount = 8;
                 scaleMin = 10;
                 noiseScale = 15;
                 this.pointValue = 100;
                 this.collisionRad = 12; 
-                this.screenWrapOffset = 17;break;
+                this.screenWrapOffset = 17;
+                break;
         }
 
+        this.shape = [
+        ];
         push();
             angleMode(DEGREES);
             for (let i = 0; i < vertexCount; i++){
@@ -54,11 +60,9 @@ class Asteroid extends GameObject {
                 let y = radius * sin( i/vertexCount * 360);
                 this.shape.push( createVector(x, y) );
             }
-        pop();
-
-        
-        
+        pop();    
     }
+
     
     Update() {
         this.Move();
@@ -83,6 +87,7 @@ class Asteroid extends GameObject {
         pop();
     }
 
+    // ------ MISC METHODS ------
     Move() {
         push();
             this.position.add(this.velocity);
@@ -91,7 +96,7 @@ class Asteroid extends GameObject {
     }
 
     DestroySelf() {
-        this.ApplyPointValue();
+        this.manager.gameInstance.UpdateScore(this.pointValue);
 
         push();
         for (let i = 0; i < 2; i++) {
@@ -120,9 +125,5 @@ class Asteroid extends GameObject {
         this.manager.InstantiateObject(OBJECT_TYPE.PARTICLE_B, this.position.copy(), 0, createVector(0,0), 30);
 
         this.isAlive = false;
-    }
-
-    ApplyPointValue() {
-        this.manager.gameInstance.UpdateScore(this.pointValue);
     }
 }

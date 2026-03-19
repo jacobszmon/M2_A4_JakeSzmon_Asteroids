@@ -1,6 +1,6 @@
 // M2 - A04 - Asteroids
 // Jake Szmon
-
+// Program Description: My Recreation of the classic game Asteroids, made using javascript with the p5.js library.
 
 
 // ------ SOUNDS ------
@@ -21,7 +21,7 @@ function preload() {
 
   gameMusic = loadSound("sounds/MainGameMusic.mp3");
 }
-
+// Start audio context and music on mouse click.
 function mouseClicked() {
   userStartAudio();
   if (!gameMusic.isPlaying()) {
@@ -53,7 +53,6 @@ function setup() {
   createCanvas(1000, 800);
   
   mainMenu = new MainMenu();
-  //gameInstance = new GameInstance();
 }
 
 function draw() {

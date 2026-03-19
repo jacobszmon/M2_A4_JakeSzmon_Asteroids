@@ -1,21 +1,25 @@
 class GameInstance {
+    
     constructor() {
+
+        // Player Lives
         this.maxLives = 3;
         this.currentLives = 3;
 
-        this.currentLevel = 1;
-
+        // Score + Level
         this.score = 0;
+        this.currentLevel = 1;
         this.lifeThresholdAchieved = 0;
         this.saucerThresholdAchieved = 0;
 
-        this.gameObjectManager = new GameObjectManager(this);
-
-        this.gameHUD = new HUD(this);
-
+        // Game is Over?
         this.gameIsOver = false;
 
+        // Objects to Manage:
+        this.gameObjectManager = new GameObjectManager(this);
+        this.gameHUD = new HUD(this);
         this.camera = new Camera();
+
 
         this.Start();
     }
@@ -30,23 +34,24 @@ class GameInstance {
         pop();
     }
 
-
     GameUpdate() {
         push();
+            // Set origin to the centre of the screen.
             translate(width/2, height/2);
 
+            // ORDER OF OPERATIONS: Update -> Draw -> Check Collisions -> Clear Dead Things.
             this.camera.Update();
-            //rect(0, 0, width, height);
             this.gameObjectManager.UpdateObjects();
             this.gameObjectManager.DrawObjects();
             this.gameObjectManager.CheckCollisions();
             this.gameObjectManager.ClearDestroyedObjects();
 
             
-
+            // Reset origin before drawing HUD, this keeps it anchored in place.
             resetMatrix();
             this.gameHUD.Draw();
 
+            // If the game isn't over, run checks.
             if (!this.gameIsOver){
                 this.CheckScoreThresholds();
                 this.CheckLives();
@@ -56,11 +61,10 @@ class GameInstance {
         pop();
     }
 
-    PlayerDied() {
-        this.currentLives--;
-    }
 
 
+    // ------ GAME MANAGER ACTIONS ------
+    // Spawns a wave of asteroids appropriate for the current level.
     SpawnEnemyWave() {
         push();
         for (let i = 0; i < this.currentLevel; i++) {
@@ -73,20 +77,23 @@ class GameInstance {
         }
         pop();
     }
-
+    // Updates the current score, increased by some Game Objects when they die.
     UpdateScore(delta) {
         this.score += delta;
         //console.log(this.score);
     }
 
+    // ------ CHECK GAME METRICS ------
+    // Checks the current score to see if the player has earned enough points to spawn a Saucer, or gain an extra life.
     CheckScoreThresholds() {
+        // HAS THE PLAYER EARNED AN EXTRA LIFE?
         if (this.score - this.lifeThresholdAchieved >= 10000) {
             this.lifeThresholdAchieved += 10000;
             this.currentLives++;
             console.log("THRESHOLD PASSED");
         }
 
-
+        // IS THE PLAYER DUE FOR A CHALLENGE?
         if (this.score - this.saucerThresholdAchieved >= 750) {
             this.saucerThresholdAchieved += 750;
 
@@ -105,7 +112,7 @@ class GameInstance {
             alarmSound.play();
         }
     }
-
+    // Checks to see if the player has lost all of their lives.
     CheckLives() {
         if (this.currentLives <= 0) {
             this.gameObjectManager.players[0].isAlive = false;
@@ -113,6 +120,11 @@ class GameInstance {
         }
     }
 
+
+    // ------ GAME EVENTS ------
+    PlayerDied() {
+        this.currentLives--;
+    }
     GameOver() {
         console.log("Game Over");
         // this.gameObjectManager.ClearAllObjects();
@@ -120,13 +132,10 @@ class GameInstance {
         this.gameIsOver = true;
         
     }
-
     LevelUp() {
         this.currentLevel++;
         this.SpawnEnemyWave();
     }
-
-
     EndGame() {
         gameInstance = undefined;
         gameActive = false;
